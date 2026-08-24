@@ -1,22 +1,23 @@
 import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { SQLiteProvider } from 'expo-sqlite';
 import { useEffect } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { DATABASE_NAME, migrateDbIfNeeded } from '@/lib/db';
+import { AuthGate } from '@/lib/auth';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -24,7 +25,6 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -39,7 +39,13 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <SQLiteProvider databaseName={DATABASE_NAME} onInit={migrateDbIfNeeded}>
+      <AuthGate>
+        <RootLayoutNav />
+      </AuthGate>
+    </SQLiteProvider>
+  );
 }
 
 function RootLayoutNav() {
@@ -47,9 +53,24 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <StatusBar style="auto" />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="warga/[id]" options={{ title: 'Detail Warga' }} />
+        <Stack.Screen name="warga/tambah" options={{ title: 'Tambah Warga' }} />
+        <Stack.Screen name="keluarga/[id]" options={{ title: 'Detail Keluarga' }} />
+        <Stack.Screen name="keluarga/tambah" options={{ title: 'Tambah Keluarga' }} />
+        <Stack.Screen name="keuangan/iuran" options={{ title: 'Iuran Warga' }} />
+        <Stack.Screen name="keuangan/kas" options={{ title: 'Kas RT' }} />
+        <Stack.Screen name="keuangan/laporan" options={{ title: 'Laporan Keuangan' }} />
+        <Stack.Screen name="surat" options={{ title: 'Surat & Pengajuan' }} />
+        <Stack.Screen name="kegiatan" options={{ title: 'Agenda & Kegiatan' }} />
+        <Stack.Screen name="pengumuman" options={{ title: 'Berita & Pengumuman' }} />
+        <Stack.Screen name="tamu" options={{ title: 'Buku Tamu' }} />
+        <Stack.Screen name="ronda" options={{ title: 'Jadwal Ronda' }} />
+        <Stack.Screen name="darurat" options={{ title: 'Pusat Darurat & Panic Button' }} />
+        <Stack.Screen name="pengguna" options={{ title: 'Manajemen Pengurus' }} />
+        <Stack.Screen name="pengaturan" options={{ title: 'Pengaturan' }} />
       </Stack>
     </ThemeProvider>
   );
