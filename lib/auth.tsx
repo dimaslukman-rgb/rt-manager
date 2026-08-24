@@ -15,6 +15,7 @@ import { Text } from '@/components/Themed';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Badge, Card, LoadingState, PrimaryButton, Screen, SectionTitle } from '@/components/ui';
+import { ensureDefaultAccounts } from '@/lib/db';
 import type { Pengguna, RoleUser } from '@/lib/types';
 
 const STORAGE_USER_KEY = '@rtmanager_current_user_v1';
@@ -140,14 +141,16 @@ function MultiRoleLoginScreen({ onLoginSuccess }: { onLoginSuccess: (user: Pengg
 
     setLoadingAction(true);
     try {
+      await ensureDefaultAccounts(db);
+
       const user = await db.getFirstAsync<Pengguna>(
-        `SELECT * FROM pengguna WHERE (username = ? OR no_hp = ?) AND aktif = 1`,
+        `SELECT * FROM pengguna WHERE (LOWER(username) = ? OR no_hp = ?) AND aktif = 1`,
         identifier.trim().toLowerCase(),
         identifier.trim()
       );
 
       if (!user) {
-        showAlert('Akun Tidak Ditemukan', 'Username atau No. HP tidak terdaftar sebagai pengurus.');
+        showAlert('Akun Tidak Ditemukan', 'Username atau No. HP tidak terdaftar. Pastikan data login sudah benar.');
         return;
       }
 
@@ -238,7 +241,7 @@ function MultiRoleLoginScreen({ onLoginSuccess }: { onLoginSuccess: (user: Pengg
 
         {step === 'kredensial' ? (
           <Card style={styles.cardBox}>
-            <Text style={styles.cardHeading}>Masuk Pengurus RT</Text>
+            <Text style={styles.cardHeading}>Masuk Aplikasi RT Manager</Text>
             <Text style={[styles.cardDesc, { color: Colors[scheme].muted }]}>
               Silakan login dengan Username / No HP dan Password Anda.
             </Text>

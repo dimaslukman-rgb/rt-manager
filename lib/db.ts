@@ -1,14 +1,43 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 5;
+const DATABASE_VERSION = 6;
 
 export const DATABASE_NAME = 'rtmanager.db';
+
+export async function ensureDefaultAccounts(db: SQLiteDatabase) {
+  try {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS pengguna (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        nama_lengkap TEXT NOT NULL,
+        no_hp TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'WARGA',
+        aktif INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      INSERT OR IGNORE INTO pengguna (id, username, nama_lengkap, no_hp, password, role, aktif)
+      VALUES
+        (1, 'admin', 'Dimas Lukman (Super Admin)', '081234567890', 'admin123', 'ADMIN', 1),
+        (2, 'ketuart', 'Bpk. Rudi Santoso (Ketua RT)', '081234567891', 'ketua123', 'KETUA_RT', 1),
+        (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
+        (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
+        (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
+        (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
+    `);
+  } catch (e) {
+    console.warn('Ensure default accounts error:', e);
+  }
+}
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   let currentDbVersion = result?.user_version ?? 0;
 
   if (currentDbVersion >= DATABASE_VERSION) {
+    await ensureDefaultAccounts(db);
     return;
   }
 
@@ -180,7 +209,7 @@ VALUES
   (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
   (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
 `);
-    currentDbVersion = 5;
+    currentDbVersion = 6;
   }
 
   if (currentDbVersion < 3) {
@@ -231,7 +260,7 @@ VALUES
     currentDbVersion = 4;
   }
 
-  if (currentDbVersion < 5) {
+  if (currentDbVersion < 5 || currentDbVersion < 6) {
     await db.execAsync(`
 CREATE TABLE IF NOT EXISTS lapor_rt (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -249,14 +278,12 @@ CREATE TABLE IF NOT EXISTS lapor_rt (
   tanggal TEXT NOT NULL DEFAULT (datetime('now')),
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-
-INSERT OR IGNORE INTO pengguna (id, username, nama_lengkap, no_hp, password, role, aktif)
-VALUES
-  (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
 `);
-    currentDbVersion = 5;
+    await ensureDefaultAccounts(db);
+    currentDbVersion = 6;
   }
 
+  await ensureDefaultAccounts(db);
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
 }
 
