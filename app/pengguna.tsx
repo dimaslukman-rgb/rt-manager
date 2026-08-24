@@ -194,7 +194,7 @@ export default function PenggunaScreen() {
                   <Text style={styles.userName}>{u.nama_lengkap}</Text>
                 </View>
                 <Text style={[styles.userMeta, { color: Colors[scheme].muted }]}>
-                  👤 Username: <b>{u.username}</b> · 📞 {u.no_hp}
+                  👤 Username: <Text style={{ fontWeight: '700', color: Colors[scheme].text }}>{u.username}</Text> · 📞 {u.no_hp}
                 </Text>
                 <Text style={[styles.userMeta, { color: Colors[scheme].muted }]}>
                   🔑 Password: {u.password}

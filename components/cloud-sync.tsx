@@ -73,7 +73,7 @@ export function MenuCloudSync() {
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>☁️ Cloud Sync (Backup & Restore)</Text>
           <Text style={[styles.meta, { color: Colors[scheme].muted }]}>
-            Akun: <b>{currentUser.nama_lengkap}</b> ({currentUser.role})
+            Akun: <Text style={{ fontWeight: '700', color: Colors[scheme].text }}>{currentUser.nama_lengkap}</Text> ({currentUser.role})
           </Text>
         </View>
       </View>

@@ -276,7 +276,7 @@ export default function IuranScreen() {
           <View style={[styles.modalBody, { backgroundColor: Colors[scheme].card }]}>
             <Text style={styles.modalTitle}>✏️ Atur Iuran Khusus KK</Text>
             <Text style={[styles.modalSub, { color: Colors[scheme].muted }]}>
-              Keluarga: <b>{selectedItem?.kepala_keluarga}</b> ({selectedItem?.bulan} {selectedItem?.tahun})
+              Keluarga: <Text style={{ fontWeight: '700', color: Colors[scheme].text }}>{selectedItem?.kepala_keluarga}</Text> ({selectedItem?.bulan} {selectedItem?.tahun})
             </Text>
 
             <Field

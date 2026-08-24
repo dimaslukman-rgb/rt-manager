@@ -85,7 +85,7 @@ export default function KeluargaDetailScreen() {
           {keluarga.alamat || '-'} · RT {keluarga.rt || '-'} / RW {keluarga.rw || '-'}
         </Text>
         <Text style={[styles.meta, { color: Colors[scheme].muted }]}>
-          💰 Iuran Bulanan: <b>{formatRupiah(keluarga.nominal_iuran ?? 50000)} / bulan</b>
+          💰 Iuran Bulanan: <Text style={{ fontWeight: '700', color: Colors[scheme].text }}>{formatRupiah(keluarga.nominal_iuran ?? 50000)} / bulan</Text>
         </Text>
         {keluarga.telepon ? (
           <Text style={[styles.meta, { color: Colors[scheme].muted }]}>Telp: {keluarga.telepon}</Text>

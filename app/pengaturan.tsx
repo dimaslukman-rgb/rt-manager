@@ -120,7 +120,7 @@ export default function PengaturanScreen() {
           keyboardType="number-pad"
         />
         <Text style={[styles.hint, { color: Colors[scheme].muted }]}>
-          💡 Standar default: <b>{formatRupiah(Number(nominalIuran.replace(/[^0-9]/g, '')) || 0)} / KK / bulan</b>. (Digunakan sebagai nilai awal. Tiap KK dapat diatur nominal khusus yang berbeda di menu Data Keluarga / Iuran).
+          💡 Standar default: <Text style={{ fontWeight: '700', color: Colors[scheme].text }}>{formatRupiah(Number(nominalIuran.replace(/[^0-9]/g, '')) || 0)} / KK / bulan</Text>. (Digunakan sebagai nilai awal. Tiap KK dapat diatur nominal khusus yang berbeda di menu Data Keluarga / Iuran).
         </Text>
       </Card>
 

@@ -132,7 +132,7 @@ export default function KeluargaFormScreen() {
             keyboardType="number-pad"
           />
           <Text style={[styles.hint, { color: Colors[scheme].muted }]}>
-            💡 Terpasang: <b>{formatRupiah(parsedNominal)} / bulan</b>. (Dapat diatur berbeda tiap KK untuk rumah tinggal, kontrakan/kos, tempat usaha, atau keringanan).
+            💡 Terpasang: <Text style={{ fontWeight: '700', color: Colors[scheme].text }}>{formatRupiah(parsedNominal)} / bulan</Text>. (Dapat diatur berbeda tiap KK untuk rumah tinggal, kontrakan/kos, tempat usaha, atau keringanan).
           </Text>
         </View>
 
