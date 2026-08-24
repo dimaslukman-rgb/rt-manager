@@ -176,3 +176,29 @@ export interface LaporPakRT {
   tanggal: string;
   created_at: string;
 }
+
+export type ShiftSecurity = 'Pagi - Siang (05:00 - 17:00)' | 'Sore - Malam (17:00 - 05:00)';
+export type StatusSecurity = 'Aktif' | 'Cuti' | 'Off';
+
+export interface SecurityPersonel {
+  id: number;
+  nama: string;
+  nik?: string;
+  no_hp: string;
+  pos_jaga: string;
+  jabatan: string;
+  shift_tetap: ShiftSecurity;
+  status: StatusSecurity;
+  foto_uri?: string;
+  created_at?: string;
+}
+
+export interface JadwalSecurity {
+  id: number;
+  hari: 'Senin' | 'Selasa' | 'Rabu' | 'Kamis' | 'Jumat' | 'Sabtu' | 'Minggu';
+  shift: ShiftSecurity;
+  petugas_ids: string;
+  petugas_nama: string;
+  pos_jaga: string;
+  keterangan: string;
+}

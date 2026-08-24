@@ -15,6 +15,8 @@ const TABLES = [
   'darurat',
   'pengguna',
   'lapor_rt',
+  'security',
+  'jadwal_security',
 ] as const;
 
 type CloudTable = (typeof TABLES)[number];
@@ -86,6 +88,8 @@ async function insertRows(db: SQLiteDatabase, table: CloudTable, rows: Row[]) {
     darurat: ['id', 'nama_pelapor', 'alamat_pelapor', 'telepon_pelapor', 'kategori', 'keterangan', 'foto_uri', 'latitude', 'longitude', 'status', 'created_at'],
     pengguna: ['id', 'username', 'nama_lengkap', 'no_hp', 'password', 'role', 'aktif', 'created_at'],
     lapor_rt: ['id', 'pengguna_id', 'nama_pelapor', 'no_hp_pelapor', 'alamat_pelapor', 'judul', 'kategori', 'isi', 'foto_uri', 'status', 'tanggapan', 'ditanggapi_oleh', 'tanggal', 'created_at'],
+    security: ['id', 'nama', 'nik', 'no_hp', 'pos_jaga', 'jabatan', 'shift_tetap', 'status', 'foto_uri', 'created_at'],
+    jadwal_security: ['id', 'hari', 'shift', 'petugas_ids', 'petugas_nama', 'pos_jaga', 'keterangan'],
   }[table];
   if (rows.length === 0) return;
 

@@ -193,6 +193,31 @@ export default function BerandaScreen() {
         </Card>
       </Pressable>
 
+      {/* 5. Menu Khusus "Petugas Security & Jadwal Shift" di Beranda */}
+      <Pressable onPress={() => router.push('/security')}>
+        <Card style={styles.securityBanner}>
+          <View style={styles.securityRow}>
+            <View style={styles.securityIconCircle}>
+              <Text style={{ fontSize: 24 }}>👮</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={styles.securityBannerTitle}>SECURITY & JADWAL SHIFT</Text>
+                <View style={styles.securityLiveTag}>
+                  <Text style={styles.securityLiveTagText}>ON DUTY</Text>
+                </View>
+              </View>
+              <Text style={styles.securityBannerSub}>
+                Pos Gerbang Utama · Siaga 24 Jam & Kontak Satpam
+              </Text>
+            </View>
+            <View style={styles.securityBadge}>
+              <Text style={styles.securityBadgeText}>JADWAL →</Text>
+            </View>
+          </View>
+        </Card>
+      </Pressable>
+
       {/* 5. Khusus Pengurus RT: Notifikasi Inbox Laporan Masuk */}
       {!isWarga && (data?.laporanBaru ?? 0) > 0 && (
         <Pressable onPress={() => router.push('/inbox')}>
@@ -356,6 +381,58 @@ const styles = StyleSheet.create({
   },
   laporBadgeText: {
     color: '#0284c7',
+    fontWeight: '900',
+    fontSize: 10,
+  },
+  securityBanner: {
+    backgroundColor: '#065f46',
+    borderColor: 'transparent',
+    padding: 14,
+    marginBottom: 10,
+  },
+  securityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  securityIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  securityBannerTitle: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  securityLiveTag: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  securityLiveTagText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  securityBannerSub: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  securityBadge: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  securityBadgeText: {
+    color: '#065f46',
     fontWeight: '900',
     fontSize: 10,
   },

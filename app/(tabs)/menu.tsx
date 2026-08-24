@@ -103,6 +103,12 @@ export default function MenuScreen() {
               href="/lapor-rt"
             />
             <MenuCard
+              title="Petugas Security"
+              subtitle="Shift dinas & kontak satpam"
+              emoji="👮"
+              href="/security"
+            />
+            <MenuCard
               title="Pusat Darurat"
               subtitle="Panic button & sirine"
               emoji="🚨"
@@ -140,6 +146,12 @@ export default function MenuScreen() {
               />
             )}
 
+            <MenuCard
+              title="Petugas Security"
+              subtitle="Shift dinas & kontak satpam"
+              emoji="👮"
+              href="/security"
+            />
             <MenuCard
               title="Lapor Pak RT!"
               subtitle="Kirim aduan warga"

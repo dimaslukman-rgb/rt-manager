@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 7;
+const DATABASE_VERSION = 8;
 
 export const DATABASE_NAME = 'rtmanager.db';
 
@@ -34,12 +34,69 @@ export async function ensureDefaultAccounts(db: SQLiteDatabase) {
   }
 }
 
+export async function ensureDefaultSecurity(db: SQLiteDatabase) {
+  try {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS security (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nama TEXT NOT NULL,
+        nik TEXT NOT NULL DEFAULT '',
+        no_hp TEXT NOT NULL,
+        pos_jaga TEXT NOT NULL DEFAULT 'Pos Gerbang Utama',
+        jabatan TEXT NOT NULL DEFAULT 'Anggota Security',
+        shift_tetap TEXT NOT NULL DEFAULT 'Pagi - Siang (05:00 - 17:00)',
+        status TEXT NOT NULL DEFAULT 'Aktif',
+        foto_uri TEXT NOT NULL DEFAULT '',
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS jadwal_security (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hari TEXT NOT NULL,
+        shift TEXT NOT NULL,
+        petugas_ids TEXT NOT NULL DEFAULT '',
+        petugas_nama TEXT NOT NULL,
+        pos_jaga TEXT NOT NULL DEFAULT 'Pos Gerbang Utama',
+        keterangan TEXT NOT NULL DEFAULT ''
+      );
+
+      INSERT OR IGNORE INTO security (id, nama, nik, no_hp, pos_jaga, jabatan, shift_tetap, status)
+      VALUES
+        (1, 'Bpk. Joko Susilo', '3201010101850001', '081234567801', 'Pos Gerbang Utama', 'Komandan Regu (Danru)', 'Pagi - Siang (05:00 - 17:00)', 'Aktif'),
+        (2, 'Bpk. Suprianto', '3201010101880002', '081234567802', 'Pos Gerbang Utama', 'Anggota Security', 'Pagi - Siang (05:00 - 17:00)', 'Aktif'),
+        (3, 'Bpk. Bambang Pamungkas', '3201010101860003', '081234567803', 'Patroli Lingkungan', 'Petugas Patroli', 'Pagi - Siang (05:00 - 17:00)', 'Aktif'),
+        (4, 'Bpk. Agus Hendrawan', '3201010101890004', '081234567804', 'Pos Gerbang Utama', 'Anggota Security', 'Sore - Malam (17:00 - 05:00)', 'Aktif'),
+        (5, 'Bpk. Suyanto', '3201010101910005', '081234567805', 'Patroli Lingkungan', 'Petugas Patroli', 'Sore - Malam (17:00 - 05:00)', 'Aktif');
+
+      INSERT OR IGNORE INTO jadwal_security (id, hari, shift, petugas_nama, pos_jaga, keterangan)
+      VALUES
+        (1, 'Senin', 'Pagi - Siang (05:00 - 17:00)', 'Bpk. Joko Susilo & Bpk. Suprianto', 'Pos Gerbang Utama', 'Standby gerbang utama & cek tamu'),
+        (2, 'Senin', 'Sore - Malam (17:00 - 05:00)', 'Bpk. Agus Hendrawan & Bpk. Suyanto', 'Pos Utama & Patroli', 'Patroli blok A-E per 2 jam'),
+        (3, 'Selasa', 'Pagi - Siang (05:00 - 17:00)', 'Bpk. Joko Susilo & Bpk. Bambang', 'Pos Gerbang Utama', 'Standby gerbang utama & cek tamu'),
+        (4, 'Selasa', 'Sore - Malam (17:00 - 05:00)', 'Bpk. Agus Hendrawan & Bpk. Suyanto', 'Pos Utama & Patroli', 'Patroli blok A-E per 2 jam'),
+        (5, 'Rabu', 'Pagi - Siang (05:00 - 17:00)', 'Bpk. Suprianto & Bpk. Bambang', 'Pos Gerbang Utama', 'Standby gerbang utama & cek tamu'),
+        (6, 'Rabu', 'Sore - Malam (17:00 - 05:00)', 'Bpk. Joko Susilo & Bpk. Agus', 'Pos Utama & Patroli', 'Patroli blok A-E per 2 jam'),
+        (7, 'Kamis', 'Pagi - Siang (05:00 - 17:00)', 'Bpk. Joko Susilo & Bpk. Suprianto', 'Pos Gerbang Utama', 'Standby gerbang utama & cek tamu'),
+        (8, 'Kamis', 'Sore - Malam (17:00 - 05:00)', 'Bpk. Bambang & Bpk. Suyanto', 'Pos Utama & Patroli', 'Patroli blok A-E per 2 jam'),
+        (9, 'Jumat', 'Pagi - Siang (05:00 - 17:00)', 'Bpk. Agus Hendrawan & Bpk. Bambang', 'Pos Gerbang Utama', 'Pengawasan sholat Jumat & tamu'),
+        (10, 'Jumat', 'Sore - Malam (17:00 - 05:00)', 'Bpk. Joko Susilo & Bpk. Suyanto', 'Pos Utama & Patroli', 'Patroli malam & portal tutup jam 23:00'),
+        (11, 'Sabtu', 'Pagi - Siang (05:00 - 17:00)', 'Bpk. Joko Susilo & Bpk. Suprianto', 'Pos Gerbang Utama', 'Weekend siaga penerimaan kurir'),
+        (12, 'Sabtu', 'Sore - Malam (17:00 - 05:00)', 'Bpk. Agus & Bpk. Bambang', 'Pos Utama & Patroli', 'Patroli intensif malam minggu'),
+        (13, 'Minggu', 'Pagi - Siang (05:00 - 17:00)', 'Bpk. Suprianto & Bpk. Suyanto', 'Pos Gerbang Utama', 'Pengawasan lingkungan akhir pekan'),
+        (14, 'Minggu', 'Sore - Malam (17:00 - 05:00)', 'Bpk. Joko Susilo & Bpk. Agus', 'Pos Utama & Patroli', 'Patroli malam & portal tutup jam 23:00');
+    `);
+  } catch (e) {
+    console.warn('Ensure default security error:', e);
+  }
+}
+
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   let currentDbVersion = result?.user_version ?? 0;
 
   if (currentDbVersion >= DATABASE_VERSION) {
     await ensureDefaultAccounts(db);
+    await ensureDefaultSecurity(db);
     return;
   }
 
@@ -216,78 +273,7 @@ VALUES
   (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
   (6, 'warga', 'Warga / Penghuni (Anonim)', '081234567895', 'warga123', 'WARGA', 1);
 `);
-    currentDbVersion = 6;
-  }
-
-  if (currentDbVersion < 3) {
-    await db.execAsync(`
-CREATE TABLE IF NOT EXISTS darurat (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nama_pelapor TEXT NOT NULL,
-  alamat_pelapor TEXT NOT NULL DEFAULT '',
-  telepon_pelapor TEXT NOT NULL DEFAULT '',
-  kategori TEXT NOT NULL DEFAULT 'Bantuan Mendesak',
-  keterangan TEXT NOT NULL DEFAULT '',
-  foto_uri TEXT NOT NULL DEFAULT '',
-  latitude REAL,
-  longitude REAL,
-  status TEXT NOT NULL DEFAULT 'Aktif',
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS pengguna (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT NOT NULL UNIQUE,
-  nama_lengkap TEXT NOT NULL,
-  no_hp TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'WARGA',
-  aktif INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-INSERT OR IGNORE INTO pengguna (id, username, nama_lengkap, no_hp, password, role, aktif)
-VALUES
-  (1, 'admin', 'Dimas Lukman (Super Admin)', '081234567890', 'admin123', 'ADMIN', 1),
-  (2, 'ketuart', 'Bpk. Rudi Santoso (Ketua RT)', '081234567891', 'ketua123', 'KETUA_RT', 1),
-  (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
-  (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
-  (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
-  (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
-`);
-    currentDbVersion = 3;
-  }
-
-  if (currentDbVersion < 4) {
-    try {
-      await db.execAsync('ALTER TABLE keluarga ADD COLUMN nominal_iuran INTEGER NOT NULL DEFAULT 50000;');
-    } catch (e) {
-      console.log('Column nominal_iuran might already exist:', e);
-    }
-    currentDbVersion = 4;
-  }
-
-  if (currentDbVersion < 5 || currentDbVersion < 6) {
-    await db.execAsync(`
-CREATE TABLE IF NOT EXISTS lapor_rt (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  pengguna_id INTEGER REFERENCES pengguna(id) ON DELETE SET NULL,
-  nama_pelapor TEXT NOT NULL,
-  no_hp_pelapor TEXT NOT NULL DEFAULT '',
-  alamat_pelapor TEXT NOT NULL DEFAULT '',
-  judul TEXT NOT NULL,
-  kategori TEXT NOT NULL DEFAULT 'Aduan Lingkungan',
-  isi TEXT NOT NULL,
-  foto_uri TEXT NOT NULL DEFAULT '',
-  status TEXT NOT NULL DEFAULT 'Terkirim',
-  tanggapan TEXT NOT NULL DEFAULT '',
-  ditanggapi_oleh TEXT NOT NULL DEFAULT '',
-  tanggal TEXT NOT NULL DEFAULT (datetime('now')),
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-`);
-    await ensureDefaultAccounts(db);
-    currentDbVersion = 6;
+    currentDbVersion = 8;
   }
 
   if (currentDbVersion < 7) {
@@ -305,7 +291,13 @@ CREATE TABLE IF NOT EXISTS lapor_rt (
     currentDbVersion = 7;
   }
 
+  if (currentDbVersion < 8) {
+    await ensureDefaultSecurity(db);
+    currentDbVersion = 8;
+  }
+
   await ensureDefaultAccounts(db);
+  await ensureDefaultSecurity(db);
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
 }
 
