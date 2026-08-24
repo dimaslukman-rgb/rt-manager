@@ -8,6 +8,7 @@ import { Text } from '@/components/Themed';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Badge, Card, EmptyState, LoadingState, Screen, SectionTitle } from '@/components/ui';
+import { formatRupiah } from '@/lib/format';
 import type { Keluarga, Warga } from '@/lib/types';
 
 export default function KeluargaDetailScreen() {
@@ -82,6 +83,9 @@ export default function KeluargaDetailScreen() {
         <Text style={[styles.meta, { color: Colors[scheme].muted }]}>No. KK: {keluarga.no_kk}</Text>
         <Text style={[styles.meta, { color: Colors[scheme].muted }]}>
           {keluarga.alamat || '-'} · RT {keluarga.rt || '-'} / RW {keluarga.rw || '-'}
+        </Text>
+        <Text style={[styles.meta, { color: Colors[scheme].muted }]}>
+          💰 Iuran Bulanan: <b>{formatRupiah(keluarga.nominal_iuran ?? 50000)} / bulan</b>
         </Text>
         {keluarga.telepon ? (
           <Text style={[styles.meta, { color: Colors[scheme].muted }]}>Telp: {keluarga.telepon}</Text>

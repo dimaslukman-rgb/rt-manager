@@ -73,7 +73,7 @@ async function downloadTable(table: CloudTable, ownerId: string) {
 
 async function insertRows(db: SQLiteDatabase, table: CloudTable, rows: Row[]) {
   const columns = {
-    keluarga: ['id', 'no_kk', 'kepala_keluarga', 'alamat', 'rt', 'rw', 'telepon', 'created_at'],
+    keluarga: ['id', 'no_kk', 'kepala_keluarga', 'alamat', 'rt', 'rw', 'telepon', 'nominal_iuran', 'created_at'],
     warga: ['id', 'keluarga_id', 'nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin', 'status_keluarga', 'pekerjaan', 'agama', 'status_perkawinan', 'telepon', 'created_at'],
     transaksi: ['id', 'tanggal', 'jenis', 'kategori', 'keterangan', 'nominal', 'created_at'],
     iuran: ['id', 'keluarga_id', 'bulan', 'tahun', 'nominal', 'status', 'tanggal_bayar'],

@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 3;
+const DATABASE_VERSION = 4;
 
 export const DATABASE_NAME = 'rtmanager.db';
 
@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS keluarga (
   rt TEXT NOT NULL DEFAULT '',
   rw TEXT NOT NULL DEFAULT '',
   telepon TEXT NOT NULL DEFAULT '',
+  nominal_iuran INTEGER NOT NULL DEFAULT 50000,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -200,6 +201,15 @@ VALUES
   (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1);
 `);
     currentDbVersion = 3;
+  }
+
+  if (currentDbVersion < 4) {
+    try {
+      await db.execAsync('ALTER TABLE keluarga ADD COLUMN nominal_iuran INTEGER NOT NULL DEFAULT 50000;');
+    } catch (e) {
+      console.log('Column nominal_iuran might already exist:', e);
+    }
+    currentDbVersion = 4;
   }
 
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);

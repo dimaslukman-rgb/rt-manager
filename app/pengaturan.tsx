@@ -110,17 +110,17 @@ export default function PengaturanScreen() {
         <Field label="Kota / Kabupaten" value={kota} onChangeText={setKota} placeholder="Nama kota" />
       </Card>
 
-      <SectionTitle>Iuran Bulanan</SectionTitle>
+      <SectionTitle>Iuran Bulanan Standar</SectionTitle>
       <Card>
         <Field
-          label="Nominal Iuran per KK (Rp)"
+          label="Nominal Iuran Standar / Default (Rp)"
           value={nominalIuran}
           onChangeText={(v) => setNominalIuran(v.replace(/[^0-9]/g, ''))}
           placeholder="50000"
           keyboardType="number-pad"
         />
         <Text style={[styles.hint, { color: Colors[scheme].muted }]}>
-          Saat ini: {formatRupiah(Number(nominalIuran.replace(/[^0-9]/g, '')) || 0)} / KK / bulan
+          💡 Standar default: <b>{formatRupiah(Number(nominalIuran.replace(/[^0-9]/g, '')) || 0)} / KK / bulan</b>. (Digunakan sebagai nilai awal. Tiap KK dapat diatur nominal khusus yang berbeda di menu Data Keluarga / Iuran).
         </Text>
       </Card>
 

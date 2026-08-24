@@ -10,6 +10,7 @@ export interface Keluarga {
   rt: string;
   rw: string;
   telepon: string;
+  nominal_iuran?: number;
   jumlah_anggota?: number;
 }
 
