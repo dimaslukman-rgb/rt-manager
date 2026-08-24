@@ -276,40 +276,6 @@ function MultiRoleLoginScreen({ onLoginSuccess }: { onLoginSuccess: (user: Pengg
               onPress={handleVerifyCredentials}
               disabled={loadingAction || !identifier.trim() || !password.trim()}
             />
-
-            {/* Quick Demo Selector */}
-            <View style={{ marginTop: 24, paddingTop: 16, borderTopWidth: 1, borderTopColor: Colors[scheme].border }}>
-              <Text style={[styles.demoTitle, { color: Colors[scheme].muted }]}>
-                ⚡ Pilihan Cepat Akun Pengurus:
-              </Text>
-              <View style={styles.demoChipGrid}>
-                <Pressable
-                  onPress={() => fillDemoAccount('admin', 'admin123')}
-                  style={[styles.demoChip, { backgroundColor: '#fee2e2', borderColor: '#ef4444' }]}>
-                  <Text style={[styles.demoChipText, { color: '#b91c1c' }]}>👑 Super Admin</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => fillDemoAccount('ketuart', 'ketua123')}
-                  style={[styles.demoChip, { backgroundColor: '#dcfce7', borderColor: '#22c55e' }]}>
-                  <Text style={[styles.demoChipText, { color: '#15803d' }]}>🏛️ Ketua RT</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => fillDemoAccount('wakilrt', 'wakil123')}
-                  style={[styles.demoChip, { backgroundColor: '#e0e7ff', borderColor: '#6366f1' }]}>
-                  <Text style={[styles.demoChipText, { color: '#4338ca' }]}>🤝 Wakil Ketua</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => fillDemoAccount('bendahara', 'bendahara123')}
-                  style={[styles.demoChip, { backgroundColor: '#fef3c7', borderColor: '#f59e0b' }]}>
-                  <Text style={[styles.demoChipText, { color: '#b45309' }]}>💰 Bendahara</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => fillDemoAccount('sekretaris', 'sekretaris123')}
-                  style={[styles.demoChip, { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }]}>
-                  <Text style={[styles.demoChipText, { color: '#7e22ce' }]}>📝 Sekretaris</Text>
-                </Pressable>
-              </View>
-            </View>
           </Card>
         ) : (
           <Card style={styles.cardBox}>
