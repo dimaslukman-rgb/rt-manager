@@ -25,7 +25,9 @@ export async function ensureDefaultAccounts(db: SQLiteDatabase) {
         (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
         (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
         (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
-        (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
+        (6, 'warga', 'Warga / Penghuni (Anonim)', '081234567895', 'warga123', 'WARGA', 1);
+
+      UPDATE pengguna SET nama_lengkap = 'Warga / Penghuni (Anonim)' WHERE username = 'warga';
     `);
   } catch (e) {
     console.warn('Ensure default accounts error:', e);
@@ -207,7 +209,7 @@ VALUES
   (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
   (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
   (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
-  (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
+  (6, 'warga', 'Warga / Penghuni (Anonim)', '081234567895', 'warga123', 'WARGA', 1);
 `);
     currentDbVersion = 6;
   }

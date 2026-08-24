@@ -32,7 +32,7 @@ const KATEGORI_LIST: KategoriLaporan[] = [
 export default function LaporPakRTScreen() {
   const db = useSQLiteContext();
   const scheme = useColorScheme();
-  const { currentUser } = useAuth();
+  const { currentUser, isWarga } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'buat' | 'riwayat'>('buat');
   const [loading, setLoading] = useState(true);
@@ -40,6 +40,8 @@ export default function LaporPakRTScreen() {
   const [laporanList, setLaporanList] = useState<LaporPakRT[]>([]);
 
   // Form State
+  const [namaCustom, setNamaCustom] = useState('');
+  const [noHpCustom, setNoHpCustom] = useState('');
   const [judul, setJudul] = useState('');
   const [kategori, setKategori] = useState<KategoriLaporan>('Aduan Lingkungan');
   const [isi, setIsi] = useState('');
@@ -49,11 +51,10 @@ export default function LaporPakRTScreen() {
   const loadRiwayat = useCallback(async () => {
     try {
       let rows: LaporPakRT[] = [];
-      if (currentUser?.id) {
+      if (currentUser?.id && !isWarga) {
         rows = await db.getAllAsync<LaporPakRT>(
-          'SELECT * FROM lapor_rt WHERE pengguna_id = ? OR no_hp_pelapor = ? ORDER BY id DESC',
-          currentUser.id,
-          currentUser.no_hp
+          'SELECT * FROM lapor_rt WHERE pengguna_id = ? ORDER BY id DESC',
+          currentUser.id
         );
       } else {
         rows = await db.getAllAsync<LaporPakRT>('SELECT * FROM lapor_rt ORDER BY id DESC');
@@ -62,7 +63,7 @@ export default function LaporPakRTScreen() {
     } finally {
       setLoading(false);
     }
-  }, [db, currentUser]);
+  }, [db, currentUser, isWarga]);
 
   useFocusEffect(
     useCallback(() => {
@@ -90,8 +91,8 @@ export default function LaporPakRTScreen() {
 
     setSaving(true);
     try {
-      const namaPelapor = currentUser?.nama_lengkap || 'Warga Hangtuah';
-      const noHpPelapor = currentUser?.no_hp || '';
+      const namaPelapor = namaCustom.trim() || 'Warga Anonim';
+      const noHpPelapor = noHpCustom.trim() || '';
       const alamatPelapor = alamat.trim() || 'Perumahan Hangtuah';
 
       await db.runAsync(
@@ -111,11 +112,13 @@ export default function LaporPakRTScreen() {
       setJudul('');
       setIsi('');
       setAlamat('');
+      setNamaCustom('');
+      setNoHpCustom('');
       setFotoUri('');
 
       await loadRiwayat();
       setActiveTab('riwayat');
-      showAlert('Laporan Terkirim! 🚀', 'Laporan Anda telah masuk ke Inbox Pengurus RT (Ketua, Wakil, Bendahara, & Sekretaris).');
+      showAlert('Laporan Terkirim! 🚀', 'Laporan Anda telah berhasil terkirim ke Inbox Pengurus RT (Ketua, Wakil, Bendahara, & Sekretaris).');
     } catch (e: any) {
       showAlert('Gagal Mengirim', e?.message || 'Terjadi kesalahan sistem.');
     } finally {
@@ -146,7 +149,7 @@ export default function LaporPakRTScreen() {
       <Card style={[styles.heroCard, { backgroundColor: '#0e9f6e' }]}>
         <Text style={styles.heroTitle}>📢 Lapor Pak RT!</Text>
         <Text style={styles.heroSub}>
-          Layanan aspirasi, pengaduan fasilitas, kebersihan, keamanan, dan keluhan warga Perumahan Hangtuah.
+          Layanan aspirasi, pengaduan fasilitas, kebersihan, keamanan, dan keluhan warga (Bisa Anonim / Bebas Identitas).
         </Text>
       </Card>
 
@@ -163,7 +166,7 @@ export default function LaporPakRTScreen() {
               styles.tabText,
               { color: activeTab === 'buat' ? '#fff' : Colors[scheme].text },
             ]}>
-            ✍️ Buat Laporan Baru
+            ✍️ Buat Laporan / Aduan
           </Text>
         </Pressable>
 
@@ -178,7 +181,7 @@ export default function LaporPakRTScreen() {
               styles.tabText,
               { color: activeTab === 'riwayat' ? '#fff' : Colors[scheme].text },
             ]}>
-            📋 Laporan Saya ({laporanList.length})
+            📋 Riwayat Laporan ({laporanList.length})
           </Text>
         </Pressable>
       </View>
@@ -187,8 +190,30 @@ export default function LaporPakRTScreen() {
         <Card>
           <Text style={styles.formTitle}>Formulir Laporan / Aspirasi Warga</Text>
           <Text style={[styles.formDesc, { color: Colors[scheme].muted }]}>
-            Laporan ini bersifat <Text style={{ fontWeight: '700' }}>rahasia</Text> dan akan langsung diteruskan ke seluruh jajaran Pengurus RT.
+            Laporan ini bersifat <Text style={{ fontWeight: '700' }}>rahasia</Text> dan diteruskan langsung ke jajaran Pengurus RT.
           </Text>
+
+          <Field
+            label="Nama Pelapor / Inisial (Opsional / Boleh Dikosongkan)"
+            value={namaCustom}
+            onChangeText={setNamaCustom}
+            placeholder="Kosongkan jika ingin Anonim (atau isi misal: Warga Blok B)"
+          />
+
+          <Field
+            label="No. WhatsApp / HP untuk Dihubungi (Opsional)"
+            value={noHpCustom}
+            onChangeText={setNoHpCustom}
+            placeholder="08xxxxxxxxxx (Kosongkan jika tidak ingin dihubungi)"
+            keyboardType="phone-pad"
+          />
+
+          <Field
+            label="Alamat / Lokasi Kejadian"
+            value={alamat}
+            onChangeText={setAlamat}
+            placeholder="Contoh: Lampu Depan Rumah Blok B3 No. 12"
+          />
 
           <Field
             label="Judul Laporan / Keluhan"
@@ -202,14 +227,6 @@ export default function LaporPakRTScreen() {
             options={KATEGORI_LIST}
             value={kategori}
             onChange={(k) => setKategori(k as KategoriLaporan)}
-          />
-
-          <View style={{ height: 10 }} />
-          <Field
-            label="Alamat / Lokasi Kejadian"
-            value={alamat}
-            onChangeText={setAlamat}
-            placeholder="Contoh: Depan Rumah Blok B3 No. 12"
           />
 
           <View style={styles.fieldWrapper}>
@@ -228,17 +245,17 @@ export default function LaporPakRTScreen() {
             />
           </View>
 
-          {/* Info Pengirim */}
-          <View style={[styles.privacyBox, { backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }]}>
-            <Text style={{ color: '#1d4ed8', fontSize: 12, fontWeight: '700' }}>
-              👤 Pelapor: {currentUser?.nama_lengkap || 'Warga'} ({currentUser?.no_hp || '-'})
+          {/* Info Privasi Anonim */}
+          <View style={[styles.privacyBox, { backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }]}>
+            <Text style={{ color: '#166534', fontSize: 12, fontWeight: '700' }}>
+              🔒 Privasi Warga Terjaga
             </Text>
-            <Text style={{ color: '#3b82f6', fontSize: 11, marginTop: 2 }}>
-              Kontak Anda otomatis tercatat agar pengurus RT dapat memberikan kabar tindak lanjut.
+            <Text style={{ color: '#15803d', fontSize: 11, marginTop: 2, lineHeight: 16 }}>
+              Anda dapat mengirim laporan tanpa mencantumkan identitas (Anonim). Laporan akan tetap masuk dan diproses oleh pengurus RT.
             </Text>
           </View>
 
-          <View style={{ marginTop: 16 }}>
+          <View style={{ marginTop: 14 }}>
             <PrimaryButton
               title={saving ? 'Mengirim...' : 'Kirim Laporan ke Pengurus RT 🚀'}
               onPress={handleKirimLaporan}
@@ -249,9 +266,9 @@ export default function LaporPakRTScreen() {
         </Card>
       ) : (
         <View>
-          <SectionTitle>Riwayat Laporan Anda ({laporanList.length})</SectionTitle>
+          <SectionTitle>Riwayat Laporan Warga ({laporanList.length})</SectionTitle>
           {laporanList.length === 0 ? (
-            <EmptyState message="Anda belum pernah membuat laporan atau aduan. Klik tab 'Buat Laporan Baru' untuk mengirim aspirasi." />
+            <EmptyState message="Belum ada laporan atau aduan yang dikirim. Klik tab 'Buat Laporan / Aduan' untuk mengirim aspirasi." />
           ) : (
             laporanList.map((item) => (
               <Card key={item.id} style={{ marginBottom: 12 }}>
@@ -263,7 +280,7 @@ export default function LaporPakRTScreen() {
                     </View>
                     <Text style={styles.laporanJudul}>{item.judul}</Text>
                     <Text style={[styles.laporanDate, { color: Colors[scheme].muted }]}>
-                      📅 {formatTanggal(item.tanggal)} {item.alamat_pelapor ? `· 📍 ${item.alamat_pelapor}` : ''}
+                      👤 {item.nama_pelapor || 'Warga Anonim'} · 📅 {formatTanggal(item.tanggal)} {item.alamat_pelapor ? `· 📍 ${item.alamat_pelapor}` : ''}
                     </Text>
                   </View>
                 </View>

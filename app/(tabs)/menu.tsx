@@ -57,19 +57,21 @@ export default function MenuScreen() {
                 ? '👑'
                 : currentUser?.role === 'BENDAHARA'
                 ? '💰'
-                : currentUser?.role === 'WARGA'
+                : isWarga
                 ? '🏡'
                 : '👤'}
             </Text>
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-              <Text style={styles.profileName}>{currentUser?.nama_lengkap || 'Pengguna'}</Text>
+              <Text style={styles.profileName}>
+                {isWarga ? 'Warga / Penghuni (Anonim)' : currentUser?.nama_lengkap || 'Pengurus RT'}
+              </Text>
               <Badge
                 label={
                   currentUser?.role === 'ADMIN'
                     ? 'SUPER ADMIN'
-                    : currentUser?.role === 'WARGA'
+                    : isWarga
                     ? 'WARGA / PENGHUNI'
                     : currentUser?.role || 'PENGURUS'
                 }
@@ -77,7 +79,9 @@ export default function MenuScreen() {
               />
             </View>
             <Text style={[styles.profileMeta, { color: Colors[scheme].muted }]}>
-              @{currentUser?.username} · 📞 {currentUser?.no_hp}
+              {isWarga
+                ? 'Akses Publik & Pengaduan Warga RT 04'
+                : `@${currentUser?.username} · 📞 ${currentUser?.no_hp}`}
             </Text>
           </View>
         </View>
@@ -109,24 +113,6 @@ export default function MenuScreen() {
               subtitle="Pengajuan surat pengantar"
               emoji="📄"
               href="/surat"
-            />
-            <MenuCard
-              title="Berita & Pengumuman"
-              subtitle="Informasi warga"
-              emoji="📰"
-              href="/pengumuman"
-            />
-            <MenuCard
-              title="Agenda & Kegiatan"
-              subtitle="Rapat & kerja bakti"
-              emoji="📅"
-              href="/kegiatan"
-            />
-            <MenuCard
-              title="Jadwal Ronda"
-              subtitle="Keamanan lingkungan"
-              emoji="👮"
-              href="/ronda"
             />
           </View>
         </>
