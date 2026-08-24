@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 8;
+const DATABASE_VERSION = 9;
 
 export const DATABASE_NAME = 'rtmanager.db';
 
@@ -25,7 +25,8 @@ export async function ensureDefaultAccounts(db: SQLiteDatabase) {
         (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
         (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
         (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
-        (6, 'warga', 'Warga / Penghuni (Anonim)', '081234567895', 'warga123', 'WARGA', 1);
+        (6, 'warga', 'Warga / Penghuni (Anonim)', '081234567895', 'warga123', 'WARGA', 1),
+        (7, 'security', 'Bpk. Joko Susilo (Danru Security)', '081234567801', 'security123', 'SECURITY', 1);
 
       UPDATE pengguna SET nama_lengkap = 'Warga / Penghuni (Anonim)' WHERE username = 'warga';
     `);
@@ -271,9 +272,10 @@ VALUES
   (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
   (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
   (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
-  (6, 'warga', 'Warga / Penghuni (Anonim)', '081234567895', 'warga123', 'WARGA', 1);
+  (6, 'warga', 'Warga / Penghuni (Anonim)', '081234567895', 'warga123', 'WARGA', 1),
+  (7, 'security', 'Bpk. Joko Susilo (Danru Security)', '081234567801', 'security123', 'SECURITY', 1);
 `);
-    currentDbVersion = 8;
+    currentDbVersion = 9;
   }
 
   if (currentDbVersion < 7) {

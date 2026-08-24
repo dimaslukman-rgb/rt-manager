@@ -25,6 +25,8 @@ export interface AuthContextValue {
   role: RoleUser | null;
   isAuthenticated: boolean;
   isWarga: boolean;
+  isSecurity: boolean;
+  isPengurus: boolean;
   login: (user: Pengguna) => Promise<void>;
   logout: () => Promise<void>;
   hasRole: (...roles: RoleUser[]) => boolean;
@@ -76,13 +78,20 @@ export function AuthGate({ children }: { children: ReactNode }) {
     return <MultiRoleLoginScreen onLoginSuccess={login} />;
   }
 
+  const role = currentUser.role;
+  const isWarga = role === 'WARGA';
+  const isSecurity = role === 'SECURITY';
+  const isPengurus = ['ADMIN', 'KETUA_RT', 'WAKIL_KETUA', 'BENDAHARA', 'SEKRETARIS'].includes(role);
+
   return (
     <AuthContext.Provider
       value={{
         currentUser,
-        role: currentUser.role,
+        role,
         isAuthenticated: true,
-        isWarga: currentUser.role === 'WARGA',
+        isWarga,
+        isSecurity,
+        isPengurus,
         login,
         logout,
         hasRole,

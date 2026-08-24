@@ -18,7 +18,7 @@ import { Badge, Card, Chips, EmptyState, FAB, Field, LoadingState, PrimaryButton
 import { useAuth } from '@/lib/auth';
 import type { Pengguna, RoleUser } from '@/lib/types';
 
-const ROLES: RoleUser[] = ['ADMIN', 'KETUA_RT', 'WAKIL_KETUA', 'BENDAHARA', 'SEKRETARIS', 'WARGA'];
+const ROLES: RoleUser[] = ['ADMIN', 'KETUA_RT', 'WAKIL_KETUA', 'BENDAHARA', 'SEKRETARIS', 'SECURITY', 'WARGA'];
 
 export default function PenggunaScreen() {
   const db = useSQLiteContext();
@@ -169,6 +169,8 @@ export default function PenggunaScreen() {
         return 'warning';
       case 'SEKRETARIS':
         return 'info';
+      case 'SECURITY':
+        return 'warning';
       case 'WARGA':
         return 'primary';
       default:

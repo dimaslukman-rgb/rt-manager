@@ -9,6 +9,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import { DATABASE_NAME, migrateDbIfNeeded } from '@/lib/db';
 import { AuthGate } from '@/lib/auth';
+import { EmergencyAlertListener } from '@/components/emergency-listener';
 
 export {
   ErrorBoundary,
@@ -54,6 +55,7 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StatusBar style="auto" />
+      <EmergencyAlertListener />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="warga/[id]" options={{ title: 'Detail Warga' }} />

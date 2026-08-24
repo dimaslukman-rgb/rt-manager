@@ -8,7 +8,8 @@ import { useAuth } from '@/lib/auth';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { isWarga } = useAuth();
+  const { isWarga, isSecurity } = useAuth();
+  const hideAdminTabs = isWarga || isSecurity;
 
   return (
     <Tabs
@@ -29,7 +30,7 @@ export default function TabLayout() {
         name="warga"
         options={{
           title: 'Warga',
-          href: isWarga ? null : '/(tabs)/warga',
+          href: hideAdminTabs ? null : '/(tabs)/warga',
           tabBarIcon: ({ color }) => (
             <SymbolView name={{ ios: 'person.3.fill', android: 'group', web: 'group' }} tintColor={color} size={24} />
           ),
@@ -39,7 +40,7 @@ export default function TabLayout() {
         name="keuangan"
         options={{
           title: 'Keuangan',
-          href: isWarga ? null : '/(tabs)/keuangan',
+          href: hideAdminTabs ? null : '/(tabs)/keuangan',
           tabBarIcon: ({ color }) => (
             <SymbolView name={{ ios: 'indianrupeesign.circle.fill', android: 'payments', web: 'payments' }} tintColor={color} size={24} />
           ),

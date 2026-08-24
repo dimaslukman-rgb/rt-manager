@@ -44,7 +44,7 @@ export default function BerandaScreen() {
   const db = useSQLiteContext();
   const scheme = useColorScheme();
   const router = useRouter();
-  const { currentUser, isWarga } = useAuth();
+  const { currentUser, isWarga, isSecurity, isPengurus } = useAuth();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<DashboardData | null>(null);
   const [pengumuman, setPengumuman] = useState<Pengumuman[]>([]);
@@ -56,28 +56,32 @@ export default function BerandaScreen() {
       const now = new Date();
       const bulan = bulanKey(now);
       const tahun = now.getFullYear();
-      const tgl = todayISO();
 
-      const [totalWarga, totalKeluarga, kasMasuk, kasKeluar, iuranBelum, iuranLunas, iuranNominalBelum, laporanBaru, pengaturanRow] =
-        await Promise.all([
-          db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM warga'),
-          db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM keluarga'),
-          db.getFirstAsync<{ s: number }>('SELECT COALESCE(SUM(nominal),0) as s FROM transaksi WHERE jenis = ?', 'Masuk'),
-          db.getFirstAsync<{ s: number }>('SELECT COALESCE(SUM(nominal),0) as s FROM transaksi WHERE jenis = ?', 'Keluar'),
-          db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Belum'),
-          db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Lunas'),
-          db.getFirstAsync<{ s: number }>('SELECT COALESCE(SUM(nominal),0) as s FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Belum'),
-          db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM lapor_rt WHERE status = ?', 'Terkirim'),
-          db.getFirstAsync<Pengaturan>('SELECT * FROM pengaturan WHERE id = 1'),
-        ]);
-
-      const pengumumanRows = await db.getAllAsync<Pengumuman>(
-        'SELECT * FROM pengumuman ORDER BY tanggal DESC, id DESC LIMIT 3'
-      );
-      const kegiatanRows = await db.getAllAsync<Kegiatan>(
-        'SELECT * FROM kegiatan WHERE tanggal >= ? ORDER BY tanggal ASC, waktu ASC LIMIT 3',
-        tgl
-      );
+      const [
+        totalWarga,
+        totalKeluarga,
+        kasMasuk,
+        kasKeluar,
+        iuranBelum,
+        iuranLunas,
+        iuranNominalBelum,
+        laporanBaru,
+        pengaturanRow,
+        pengumumanRows,
+        kegiatanRows,
+      ] = await Promise.all([
+        db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM warga'),
+        db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM keluarga'),
+        db.getFirstAsync<{ s: number }>('SELECT COALESCE(SUM(nominal),0) as s FROM transaksi WHERE jenis = ?', 'Masuk'),
+        db.getFirstAsync<{ s: number }>('SELECT COALESCE(SUM(nominal),0) as s FROM transaksi WHERE jenis = ?', 'Keluar'),
+        db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Belum'),
+        db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Lunas'),
+        db.getFirstAsync<{ s: number }>('SELECT COALESCE(SUM(nominal),0) as s FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Belum'),
+        db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM lapor_rt WHERE status = ?', 'Terkirim'),
+        db.getFirstAsync<Pengaturan>('SELECT * FROM pengaturan WHERE id = 1'),
+        db.getAllAsync<Pengumuman>('SELECT * FROM pengumuman ORDER BY tanggal DESC, id DESC LIMIT 5'),
+        db.getAllAsync<Kegiatan>('SELECT * FROM kegiatan WHERE tanggal >= ? ORDER BY tanggal ASC LIMIT 3', todayISO()),
+      ]);
 
       setData({
         totalWarga: totalWarga?.c ?? 0,
@@ -110,6 +114,8 @@ export default function BerandaScreen() {
   const saldo = (data?.kasMasuk ?? 0) - (data?.kasKeluar ?? 0);
   const roleDisplay = currentUser?.role === 'ADMIN'
     ? '👑 SUPER ADMIN'
+    : currentUser?.role === 'SECURITY'
+    ? '👮 PETUGAS SECURITY'
     : currentUser?.role === 'WARGA'
     ? '🏡 WARGA / PENGHUNI'
     : currentUser?.role
@@ -145,7 +151,7 @@ export default function BerandaScreen() {
         <Text style={styles.heroSub}>
           {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </Text>
-        {!isWarga && (
+        {!isWarga && !isSecurity && (
           <View style={styles.heroBadges}>
             <Badge label={`${data?.iuranLunas ?? 0} KK lunas bulan ini`} variant="success" />
             {data && data.iuranBelum > 0 && <Badge label={`${data.iuranBelum} KK belum bayar`} variant="warning" />}

@@ -10,7 +10,7 @@ import { isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 
 export default function MenuScreen() {
-  const { currentUser, logout, hasRole, isWarga } = useAuth();
+  const { currentUser, logout, hasRole, isWarga, isSecurity } = useAuth();
   const scheme = useColorScheme();
   const router = useRouter();
 
@@ -39,6 +39,8 @@ export default function MenuScreen() {
         return 'warning';
       case 'SEKRETARIS':
         return 'info';
+      case 'SECURITY':
+        return 'warning';
       case 'WARGA':
         return 'primary';
       default:
@@ -57,6 +59,8 @@ export default function MenuScreen() {
                 ? '👑'
                 : currentUser?.role === 'BENDAHARA'
                 ? '💰'
+                : isSecurity
+                ? '👮'
                 : isWarga
                 ? '🏡'
                 : '👤'}
@@ -71,6 +75,8 @@ export default function MenuScreen() {
                 label={
                   currentUser?.role === 'ADMIN'
                     ? 'SUPER ADMIN'
+                    : isSecurity
+                    ? 'SECURITY'
                     : isWarga
                     ? 'WARGA / PENGHUNI'
                     : currentUser?.role || 'PENGURUS'
@@ -117,6 +123,48 @@ export default function MenuScreen() {
             <MenuCard
               title="Surat & Pengajuan"
               subtitle="Pengajuan surat pengantar"
+              emoji="📄"
+              href="/surat"
+            />
+          </View>
+        </>
+      ) : isSecurity ? (
+        <>
+          <SectionTitle>Menu Operasional Security</SectionTitle>
+          <View style={styles.grid}>
+            <MenuCard
+              title="Pusat Darurat & Panic"
+              subtitle="Monitor alarm & panggilan warga"
+              emoji="🚨"
+              href="/darurat"
+            />
+            <MenuCard
+              title="Petugas & Jadwal Shift"
+              subtitle="Shift dinas on duty & personil"
+              emoji="👮"
+              href="/security"
+            />
+            <MenuCard
+              title="Buku Tamu"
+              subtitle="Pencatatan tamu lingkungan"
+              emoji="📖"
+              href="/tamu"
+            />
+            <MenuCard
+              title="Jadwal Ronda"
+              subtitle="Keamanan lingkungan"
+              emoji="🛡️"
+              href="/ronda"
+            />
+            <MenuCard
+              title="Lapor Pak RT!"
+              subtitle="Aspirasi & keluhan warga"
+              emoji="📢"
+              href="/lapor-rt"
+            />
+            <MenuCard
+              title="Surat & Pengajuan"
+              subtitle="Arsip surat warga"
               emoji="📄"
               href="/surat"
             />

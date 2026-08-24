@@ -17,6 +17,7 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Badge, Card, EmptyState, LoadingState, PrimaryButton, Screen, SectionTitle } from '@/components/ui';
 import { isSirenPlaying, playPanicAlertBeep, startEmergencySiren, stopEmergencySiren } from '@/lib/siren';
+import { broadcastPanicAlert } from '@/components/emergency-listener';
 import type { KategoriDarurat, LaporanDarurat, StatusDarurat } from '@/lib/types';
 import { formatTanggal } from '@/lib/format';
 
@@ -158,6 +159,7 @@ export default function DaruratScreen() {
       );
 
       setAlertSuccess(true);
+      broadcastPanicAlert();
       await loadLaporan();
       setTab('security');
     } catch (e: any) {
@@ -169,10 +171,11 @@ export default function DaruratScreen() {
 
   async function updateStatus(id: number, nextStatus: StatusDarurat) {
     await db.runAsync('UPDATE darurat SET status = ? WHERE id = ?', nextStatus, id);
-    if (nextStatus === 'Selesai') {
+    if (nextStatus === 'Selesai' || nextStatus === 'Ditangani') {
       stopEmergencySiren();
       setSirenOn(false);
     }
+    broadcastPanicAlert();
     await loadLaporan();
   }
 

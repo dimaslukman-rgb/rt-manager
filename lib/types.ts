@@ -137,7 +137,7 @@ export interface LaporanDarurat {
   created_at: string;
 }
 
-export type RoleUser = 'ADMIN' | 'KETUA_RT' | 'WAKIL_KETUA' | 'BENDAHARA' | 'SEKRETARIS' | 'WARGA';
+export type RoleUser = 'ADMIN' | 'KETUA_RT' | 'WAKIL_KETUA' | 'BENDAHARA' | 'SEKRETARIS' | 'WARGA' | 'SECURITY';
 
 export interface Pengguna {
   id: number;
