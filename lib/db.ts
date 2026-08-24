@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 6;
+const DATABASE_VERSION = 7;
 
 export const DATABASE_NAME = 'rtmanager.db';
 
@@ -109,9 +109,14 @@ CREATE TABLE IF NOT EXISTS iuran (
 CREATE TABLE IF NOT EXISTS surat (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   pemohon_id INTEGER REFERENCES warga(id) ON DELETE SET NULL,
+  nama_pemohon TEXT NOT NULL DEFAULT '',
+  nik_pemohon TEXT NOT NULL DEFAULT '',
+  no_hp_pemohon TEXT NOT NULL DEFAULT '',
+  alamat_pemohon TEXT NOT NULL DEFAULT '',
   jenis_surat TEXT NOT NULL,
   keperluan TEXT NOT NULL DEFAULT '',
   status TEXT NOT NULL DEFAULT 'Diajukan',
+  catatan_pengurus TEXT NOT NULL DEFAULT '',
   tanggal_pengajuan TEXT NOT NULL,
   tanggal_selesai TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -283,6 +288,21 @@ CREATE TABLE IF NOT EXISTS lapor_rt (
 `);
     await ensureDefaultAccounts(db);
     currentDbVersion = 6;
+  }
+
+  if (currentDbVersion < 7) {
+    try {
+      await db.execAsync(`
+        ALTER TABLE surat ADD COLUMN nama_pemohon TEXT NOT NULL DEFAULT '';
+        ALTER TABLE surat ADD COLUMN nik_pemohon TEXT NOT NULL DEFAULT '';
+        ALTER TABLE surat ADD COLUMN no_hp_pemohon TEXT NOT NULL DEFAULT '';
+        ALTER TABLE surat ADD COLUMN alamat_pemohon TEXT NOT NULL DEFAULT '';
+        ALTER TABLE surat ADD COLUMN catatan_pengurus TEXT NOT NULL DEFAULT '';
+      `);
+    } catch (e) {
+      console.log('Columns on surat might already exist:', e);
+    }
+    currentDbVersion = 7;
   }
 
   await ensureDefaultAccounts(db);

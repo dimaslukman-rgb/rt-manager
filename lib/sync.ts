@@ -78,7 +78,7 @@ async function insertRows(db: SQLiteDatabase, table: CloudTable, rows: Row[]) {
     warga: ['id', 'keluarga_id', 'nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin', 'status_keluarga', 'pekerjaan', 'agama', 'status_perkawinan', 'telepon', 'created_at'],
     transaksi: ['id', 'tanggal', 'jenis', 'kategori', 'keterangan', 'nominal', 'created_at'],
     iuran: ['id', 'keluarga_id', 'bulan', 'tahun', 'nominal', 'status', 'tanggal_bayar'],
-    surat: ['id', 'pemohon_id', 'jenis_surat', 'keperluan', 'status', 'tanggal_pengajuan', 'tanggal_selesai', 'created_at'],
+    surat: ['id', 'pemohon_id', 'nama_pemohon', 'nik_pemohon', 'no_hp_pemohon', 'alamat_pemohon', 'jenis_surat', 'keperluan', 'status', 'catatan_pengurus', 'tanggal_pengajuan', 'tanggal_selesai', 'created_at'],
     kegiatan: ['id', 'judul', 'deskripsi', 'tanggal', 'waktu', 'lokasi', 'jenis', 'created_at'],
     pengumuman: ['id', 'judul', 'isi', 'tanggal', 'penting', 'created_at'],
     buku_tamu: ['id', 'nama', 'alamat', 'keperluan', 'jenis', 'tanggal', 'jam', 'catatan', 'created_at'],

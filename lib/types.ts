@@ -57,11 +57,16 @@ export type StatusSurat = 'Diajukan' | 'Diproses' | 'Selesai' | 'Ditolak';
 
 export interface Surat {
   id: number;
-  pemohon_id: number;
-  pemohon_nama: string;
+  pemohon_id?: number | null;
+  pemohon_nama?: string;
+  nama_pemohon?: string;
+  nik_pemohon?: string;
+  no_hp_pemohon?: string;
+  alamat_pemohon?: string;
   jenis_surat: string;
   keperluan: string;
   status: StatusSurat;
+  catatan_pengurus?: string;
   tanggal_pengajuan: string;
   tanggal_selesai: string | null;
 }
