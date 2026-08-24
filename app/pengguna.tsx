@@ -169,6 +169,8 @@ export default function PenggunaScreen() {
         return 'warning';
       case 'SEKRETARIS':
         return 'info';
+      case 'WARGA':
+        return 'primary';
       default:
         return 'info';
     }

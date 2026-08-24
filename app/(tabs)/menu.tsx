@@ -10,7 +10,7 @@ import { isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 
 export default function MenuScreen() {
-  const { currentUser, logout, hasRole } = useAuth();
+  const { currentUser, logout, hasRole, isWarga } = useAuth();
   const scheme = useColorScheme();
   const router = useRouter();
 
@@ -39,6 +39,8 @@ export default function MenuScreen() {
         return 'warning';
       case 'SEKRETARIS':
         return 'info';
+      case 'WARGA':
+        return 'primary';
       default:
         return 'info';
     }
@@ -51,14 +53,26 @@ export default function MenuScreen() {
         <View style={styles.profileRow}>
           <View style={styles.profileAvatar}>
             <Text style={{ fontSize: 24 }}>
-              {currentUser?.role === 'ADMIN' ? '👑' : currentUser?.role === 'BENDAHARA' ? '💰' : '👤'}
+              {currentUser?.role === 'ADMIN'
+                ? '👑'
+                : currentUser?.role === 'BENDAHARA'
+                ? '💰'
+                : currentUser?.role === 'WARGA'
+                ? '🏡'
+                : '👤'}
             </Text>
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-              <Text style={styles.profileName}>{currentUser?.nama_lengkap || 'Pengurus RT'}</Text>
+              <Text style={styles.profileName}>{currentUser?.nama_lengkap || 'Pengguna'}</Text>
               <Badge
-                label={currentUser?.role === 'ADMIN' ? 'SUPER ADMIN' : currentUser?.role || 'PENGURUS'}
+                label={
+                  currentUser?.role === 'ADMIN'
+                    ? 'SUPER ADMIN'
+                    : currentUser?.role === 'WARGA'
+                    ? 'WARGA / PENGHUNI'
+                    : currentUser?.role || 'PENGURUS'
+                }
                 variant={getRoleBadgeVariant(currentUser?.role)}
               />
             </View>
@@ -69,32 +83,128 @@ export default function MenuScreen() {
         </View>
 
         <Pressable onPress={handleLogout} style={styles.logoutBtn}>
-          <Text style={styles.logoutBtnText}>🚪 Keluar / Ganti Akun Pengurus</Text>
+          <Text style={styles.logoutBtnText}>🚪 Keluar / Ganti Akun</Text>
         </Pressable>
       </Card>
 
-      <SectionTitle>Manajemen RT</SectionTitle>
-      {isSupabaseConfigured && <MenuCloudSync />}
+      {/* Menu Navigasi Sesuai Role */}
+      {isWarga ? (
+        <>
+          <SectionTitle>Layanan Warga / Penghuni</SectionTitle>
+          <View style={styles.grid}>
+            <MenuCard
+              title="Lapor Pak RT!"
+              subtitle="Kirim aduan & aspirasi"
+              emoji="📢"
+              href="/lapor-rt"
+            />
+            <MenuCard
+              title="Pusat Darurat"
+              subtitle="Panic button & sirine"
+              emoji="🚨"
+              href="/darurat"
+            />
+            <MenuCard
+              title="Surat & Pengajuan"
+              subtitle="Pengajuan surat pengantar"
+              emoji="📄"
+              href="/surat"
+            />
+            <MenuCard
+              title="Berita & Pengumuman"
+              subtitle="Informasi warga"
+              emoji="📰"
+              href="/pengumuman"
+            />
+            <MenuCard
+              title="Agenda & Kegiatan"
+              subtitle="Rapat & kerja bakti"
+              emoji="📅"
+              href="/kegiatan"
+            />
+            <MenuCard
+              title="Jadwal Ronda"
+              subtitle="Keamanan lingkungan"
+              emoji="👮"
+              href="/ronda"
+            />
+          </View>
+        </>
+      ) : (
+        <>
+          <SectionTitle>Manajemen RT</SectionTitle>
+          {isSupabaseConfigured && <MenuCloudSync />}
 
-      <View style={styles.grid}>
-        {/* Admin only User Management Menu */}
-        {hasRole('ADMIN') && (
-          <MenuCard
-            title="Kelola Pengurus"
-            subtitle="Manajemen akun & role RT"
-            emoji="👑"
-            href="/pengguna"
-          />
-        )}
+          <View style={styles.grid}>
+            {/* Inbox Laporan Warga for all RT Officials */}
+            <MenuCard
+              title="Inbox Laporan Warga"
+              subtitle="Kotak masuk aduan warga"
+              emoji="📥"
+              href="/inbox"
+            />
 
-        <MenuCard title="Pusat Darurat" subtitle="Panic button & sirine" emoji="🚨" href="/darurat" />
-        <MenuCard title="Surat & Pengajuan" subtitle="Pengajuan surat pengantar" emoji="📄" href="/surat" />
-        <MenuCard title="Agenda & Kegiatan" subtitle="Rapat, kerja bakti, dll" emoji="📅" href="/kegiatan" />
-        <MenuCard title="Berita & Pengumuman" subtitle="Informasi untuk warga" emoji="📢" href="/pengumuman" />
-        <MenuCard title="Buku Tamu" subtitle="Catatan kunjungan" emoji="📖" href="/tamu" />
-        <MenuCard title="Jadwal Ronda" subtitle="Keamanan lingkungan" emoji="👮" href="/ronda" />
-        <MenuCard title="Pengaturan" subtitle="Info RT & iuran" emoji="⚙️" href="/pengaturan" />
-      </View>
+            {/* Admin only User Management Menu */}
+            {hasRole('ADMIN') && (
+              <MenuCard
+                title="Kelola Pengurus"
+                subtitle="Manajemen akun & role RT"
+                emoji="👑"
+                href="/pengguna"
+              />
+            )}
+
+            <MenuCard
+              title="Lapor Pak RT!"
+              subtitle="Kirim aduan warga"
+              emoji="📢"
+              href="/lapor-rt"
+            />
+            <MenuCard
+              title="Pusat Darurat"
+              subtitle="Panic button & sirine"
+              emoji="🚨"
+              href="/darurat"
+            />
+            <MenuCard
+              title="Surat & Pengajuan"
+              subtitle="Pengajuan surat pengantar"
+              emoji="📄"
+              href="/surat"
+            />
+            <MenuCard
+              title="Agenda & Kegiatan"
+              subtitle="Rapat, kerja bakti, dll"
+              emoji="📅"
+              href="/kegiatan"
+            />
+            <MenuCard
+              title="Berita & Pengumuman"
+              subtitle="Informasi untuk warga"
+              emoji="📰"
+              href="/pengumuman"
+            />
+            <MenuCard
+              title="Buku Tamu"
+              subtitle="Catatan kunjungan"
+              emoji="📖"
+              href="/tamu"
+            />
+            <MenuCard
+              title="Jadwal Ronda"
+              subtitle="Keamanan lingkungan"
+              emoji="👮"
+              href="/ronda"
+            />
+            <MenuCard
+              title="Pengaturan"
+              subtitle="Info RT & iuran"
+              emoji="⚙️"
+              href="/pengaturan"
+            />
+          </View>
+        </>
+      )}
     </Screen>
   );
 }

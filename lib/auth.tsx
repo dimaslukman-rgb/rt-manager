@@ -23,6 +23,7 @@ export interface AuthContextValue {
   currentUser: Pengguna | null;
   role: RoleUser | null;
   isAuthenticated: boolean;
+  isWarga: boolean;
   login: (user: Pengguna) => Promise<void>;
   logout: () => Promise<void>;
   hasRole: (...roles: RoleUser[]) => boolean;
@@ -80,6 +81,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
         currentUser,
         role: currentUser.role,
         isAuthenticated: true,
+        isWarga: currentUser.role === 'WARGA',
         login,
         logout,
         hasRole,

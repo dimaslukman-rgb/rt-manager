@@ -21,6 +21,7 @@ interface DashboardData {
   iuranBelum: number;
   iuranLunas: number;
   iuranNominalBelum: number;
+  laporanBaru: number;
 }
 
 function StatCard({ label, value, color, onPress }: { label: string; value: string; color: string; onPress?: () => void }) {
@@ -43,7 +44,7 @@ export default function BerandaScreen() {
   const db = useSQLiteContext();
   const scheme = useColorScheme();
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { currentUser, isWarga } = useAuth();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<DashboardData | null>(null);
   const [pengumuman, setPengumuman] = useState<Pengumuman[]>([]);
@@ -57,7 +58,7 @@ export default function BerandaScreen() {
       const tahun = now.getFullYear();
       const tgl = todayISO();
 
-      const [totalWarga, totalKeluarga, kasMasuk, kasKeluar, iuranBelum, iuranLunas, iuranNominalBelum, pengaturanRow] =
+      const [totalWarga, totalKeluarga, kasMasuk, kasKeluar, iuranBelum, iuranLunas, iuranNominalBelum, laporanBaru, pengaturanRow] =
         await Promise.all([
           db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM warga'),
           db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM keluarga'),
@@ -66,6 +67,7 @@ export default function BerandaScreen() {
           db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Belum'),
           db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Lunas'),
           db.getFirstAsync<{ s: number }>('SELECT COALESCE(SUM(nominal),0) as s FROM iuran WHERE bulan = ? AND tahun = ? AND status = ?', bulan, tahun, 'Belum'),
+          db.getFirstAsync<{ c: number }>('SELECT COUNT(*) as c FROM lapor_rt WHERE status = ?', 'Terkirim'),
           db.getFirstAsync<Pengaturan>('SELECT * FROM pengaturan WHERE id = 1'),
         ]);
 
@@ -85,6 +87,7 @@ export default function BerandaScreen() {
         iuranBelum: iuranBelum?.c ?? 0,
         iuranLunas: iuranLunas?.c ?? 0,
         iuranNominalBelum: iuranNominalBelum?.s ?? 0,
+        laporanBaru: laporanBaru?.c ?? 0,
       });
       setPengumuman(pengumumanRows);
       setKegiatan(kegiatanRows);
@@ -105,11 +108,17 @@ export default function BerandaScreen() {
   }
 
   const saldo = (data?.kasMasuk ?? 0) - (data?.kasKeluar ?? 0);
-  const namaRt = pengaturan?.nama_rt ?? 'RT 04';
-  const roleDisplay = currentUser?.role === 'ADMIN' ? '👑 SUPER ADMIN' : currentUser?.role ? `🏛️ ${currentUser.role}` : 'PENGURUS';
+  const roleDisplay = currentUser?.role === 'ADMIN'
+    ? '👑 SUPER ADMIN'
+    : currentUser?.role === 'WARGA'
+    ? '🏡 WARGA / PENGHUNI'
+    : currentUser?.role
+    ? `🏛️ ${currentUser.role}`
+    : 'PENGURUS';
+
   const cleanName = currentUser?.nama_lengkap
     ? currentUser.nama_lengkap.replace(/\s*\(.*?\)\s*/g, '').trim()
-    : 'Pengurus';
+    : 'Warga';
 
   return (
     <Screen>
@@ -136,10 +145,12 @@ export default function BerandaScreen() {
         <Text style={styles.heroSub}>
           {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </Text>
-        <View style={styles.heroBadges}>
-          <Badge label={`${data?.iuranLunas ?? 0} KK lunas bulan ini`} variant="success" />
-          {data && data.iuranBelum > 0 && <Badge label={`${data.iuranBelum} KK belum bayar`} variant="warning" />}
-        </View>
+        {!isWarga && (
+          <View style={styles.heroBadges}>
+            <Badge label={`${data?.iuranLunas ?? 0} KK lunas bulan ini`} variant="success" />
+            {data && data.iuranBelum > 0 && <Badge label={`${data.iuranBelum} KK belum bayar`} variant="warning" />}
+          </View>
+        )}
       </Card>
 
       {/* 3. Panic Button Emergency Card */}
@@ -161,6 +172,48 @@ export default function BerandaScreen() {
           </View>
         </Card>
       </Pressable>
+
+      {/* 4. Menu Khusus "Lapor Pak RT!" untuk Warga / Pengurus */}
+      <Pressable onPress={() => router.push('/lapor-rt')}>
+        <Card style={styles.laporBanner}>
+          <View style={styles.laporRow}>
+            <View style={styles.laporIconCircle}>
+              <Text style={{ fontSize: 24 }}>📢</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.laporBannerTitle}>LAPOR PAK RT!</Text>
+              <Text style={styles.laporBannerSub}>
+                Kirim aduan lingkungan, fasilitas rusak, atau usulan ke pengurus
+              </Text>
+            </View>
+            <View style={styles.laporBadge}>
+              <Text style={styles.laporBadgeText}>BUAT ADUAN →</Text>
+            </View>
+          </View>
+        </Card>
+      </Pressable>
+
+      {/* 5. Khusus Pengurus RT: Notifikasi Inbox Laporan Masuk */}
+      {!isWarga && (data?.laporanBaru ?? 0) > 0 && (
+        <Pressable onPress={() => router.push('/inbox')}>
+          <Card style={styles.inboxAlertCard}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
+                <Text style={{ fontSize: 22 }}>📥</Text>
+                <View>
+                  <Text style={styles.inboxAlertTitle}>Kotak Masuk (Inbox) Warga</Text>
+                  <Text style={styles.inboxAlertSub}>
+                    Ada <Text style={{ fontWeight: '800', color: '#dc2626' }}>{data?.laporanBaru} laporan baru</Text> dari warga yang perlu ditindaklanjuti.
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.inboxCountBadge}>
+                <Text style={styles.inboxCountText}>{data?.laporanBaru}</Text>
+              </View>
+            </View>
+          </Card>
+        </Pressable>
+      )}
 
       <SectionTitle>Ringkasan</SectionTitle>
       <View style={styles.statsRow}>
@@ -228,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#dc2626',
     borderColor: 'transparent',
     padding: 14,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   panicRow: {
     flexDirection: 'row',
@@ -265,6 +318,76 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     fontSize: 10,
   },
+  laporBanner: {
+    backgroundColor: '#0284c7',
+    borderColor: 'transparent',
+    padding: 14,
+    marginBottom: 10,
+  },
+  laporRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  laporIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  laporBannerTitle: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  laporBannerSub: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  laporBadge: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  laporBadgeText: {
+    color: '#0284c7',
+    fontWeight: '900',
+    fontSize: 10,
+  },
+  inboxAlertCard: {
+    backgroundColor: '#fee2e2',
+    borderColor: '#fca5a5',
+    padding: 12,
+    marginBottom: 10,
+  },
+  inboxAlertTitle: {
+    color: '#991b1b',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  inboxAlertSub: {
+    color: '#7f1d1d',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  inboxCountBadge: {
+    backgroundColor: '#dc2626',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inboxCountText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '900',
+  },
   bannerCard: {
     borderRadius: 16,
     overflow: 'hidden',
@@ -297,7 +420,7 @@ const styles = StyleSheet.create({
   hero: {
     backgroundColor: '#0e9f6e',
     borderColor: 'transparent',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   roleHeaderBadge: {
     backgroundColor: 'rgba(255, 255, 255, 0.25)',

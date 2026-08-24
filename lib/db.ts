@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 4;
+const DATABASE_VERSION = 5;
 
 export const DATABASE_NAME = 'rtmanager.db';
 
@@ -151,6 +151,23 @@ CREATE TABLE IF NOT EXISTS pengguna (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS lapor_rt (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  pengguna_id INTEGER REFERENCES pengguna(id) ON DELETE SET NULL,
+  nama_pelapor TEXT NOT NULL,
+  no_hp_pelapor TEXT NOT NULL DEFAULT '',
+  alamat_pelapor TEXT NOT NULL DEFAULT '',
+  judul TEXT NOT NULL,
+  kategori TEXT NOT NULL DEFAULT 'Aduan Lingkungan',
+  isi TEXT NOT NULL,
+  foto_uri TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'Terkirim',
+  tanggapan TEXT NOT NULL DEFAULT '',
+  ditanggapi_oleh TEXT NOT NULL DEFAULT '',
+  tanggal TEXT NOT NULL DEFAULT (datetime('now')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 INSERT INTO pengaturan (id, nama_rt, nama_kelurahan, nama_kecamatan, nama_kota, nominal_iuran)
 VALUES (1, 'RT 04', 'Setu', 'Setu', 'Bekasi', 50000);
 
@@ -160,9 +177,10 @@ VALUES
   (2, 'ketuart', 'Bpk. Rudi Santoso (Ketua RT)', '081234567891', 'ketua123', 'KETUA_RT', 1),
   (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
   (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
-  (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1);
+  (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
+  (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
 `);
-    currentDbVersion = 3;
+    currentDbVersion = 5;
   }
 
   if (currentDbVersion < 3) {
@@ -198,7 +216,8 @@ VALUES
   (2, 'ketuart', 'Bpk. Rudi Santoso (Ketua RT)', '081234567891', 'ketua123', 'KETUA_RT', 1),
   (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
   (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
-  (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1);
+  (5, 'sekretaris', 'Bpk. Ahmad Fauzi (Sekretaris)', '081234567894', 'sekretaris123', 'SEKRETARIS', 1),
+  (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
 `);
     currentDbVersion = 3;
   }
@@ -210,6 +229,32 @@ VALUES
       console.log('Column nominal_iuran might already exist:', e);
     }
     currentDbVersion = 4;
+  }
+
+  if (currentDbVersion < 5) {
+    await db.execAsync(`
+CREATE TABLE IF NOT EXISTS lapor_rt (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  pengguna_id INTEGER REFERENCES pengguna(id) ON DELETE SET NULL,
+  nama_pelapor TEXT NOT NULL,
+  no_hp_pelapor TEXT NOT NULL DEFAULT '',
+  alamat_pelapor TEXT NOT NULL DEFAULT '',
+  judul TEXT NOT NULL,
+  kategori TEXT NOT NULL DEFAULT 'Aduan Lingkungan',
+  isi TEXT NOT NULL,
+  foto_uri TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'Terkirim',
+  tanggapan TEXT NOT NULL DEFAULT '',
+  ditanggapi_oleh TEXT NOT NULL DEFAULT '',
+  tanggal TEXT NOT NULL DEFAULT (datetime('now')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+INSERT OR IGNORE INTO pengguna (id, username, nama_lengkap, no_hp, password, role, aktif)
+VALUES
+  (6, 'warga', 'Bpk. Budi Santoso (Warga/Penghuni)', '081234567895', 'warga123', 'WARGA', 1);
+`);
+    currentDbVersion = 5;
   }
 
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);

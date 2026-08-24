@@ -144,3 +144,30 @@ export interface Pengguna {
   aktif: number;
   created_at: string;
 }
+
+export type KategoriLaporan =
+  | 'Aduan Lingkungan'
+  | 'Keamanan & Ketertiban'
+  | 'Fasilitas & Lampu Jalan'
+  | 'Kebersihan & Sampah'
+  | 'Administrasi & Iuran'
+  | 'Usulan & Saran';
+
+export type StatusLaporan = 'Terkirim' | 'Dibaca' | 'Ditindaklanjuti' | 'Selesai';
+
+export interface LaporPakRT {
+  id: number;
+  pengguna_id: number | null;
+  nama_pelapor: string;
+  no_hp_pelapor: string;
+  alamat_pelapor: string;
+  judul: string;
+  kategori: KategoriLaporan;
+  isi: string;
+  foto_uri: string;
+  status: StatusLaporan;
+  tanggapan: string;
+  ditanggapi_oleh: string;
+  tanggal: string;
+  created_at: string;
+}

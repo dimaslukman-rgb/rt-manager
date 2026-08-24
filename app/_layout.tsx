@@ -69,6 +69,8 @@ function RootLayoutNav() {
         <Stack.Screen name="tamu" options={{ title: 'Buku Tamu' }} />
         <Stack.Screen name="ronda" options={{ title: 'Jadwal Ronda' }} />
         <Stack.Screen name="darurat" options={{ title: 'Pusat Darurat & Panic Button' }} />
+        <Stack.Screen name="lapor-rt" options={{ title: 'Lapor Pak RT!' }} />
+        <Stack.Screen name="inbox" options={{ title: 'Inbox Laporan Warga' }} />
         <Stack.Screen name="pengguna" options={{ title: 'Manajemen Pengurus' }} />
         <Stack.Screen name="pengaturan" options={{ title: 'Pengaturan' }} />
       </Stack>
