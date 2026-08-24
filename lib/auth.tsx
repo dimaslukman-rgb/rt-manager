@@ -244,7 +244,7 @@ function MultiRoleLoginScreen({ onLoginSuccess }: { onLoginSuccess: (user: Pengg
             <View style={styles.fieldWrapper}>
               <Text style={[styles.fieldLabel, { color: Colors[scheme].muted }]}>Username atau Nomor HP</Text>
               <TextInput
-                placeholder="Contoh: admin atau 08119547505"
+                placeholder="Contoh: admin atau 081234567890"
                 placeholderTextColor={Colors[scheme].muted}
                 value={identifier}
                 onChangeText={setIdentifier}

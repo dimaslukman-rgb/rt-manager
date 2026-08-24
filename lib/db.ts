@@ -155,7 +155,7 @@ VALUES (1, 'RT 04', 'Setu', 'Setu', 'Bekasi', 50000);
 
 INSERT OR IGNORE INTO pengguna (id, username, nama_lengkap, no_hp, password, role, aktif)
 VALUES
-  (1, 'admin', 'Dimas Lukman (Super Admin)', '08119547505', 'admin123', 'ADMIN', 1),
+  (1, 'admin', 'Dimas Lukman (Super Admin)', '081234567890', 'admin123', 'ADMIN', 1),
   (2, 'ketuart', 'Bpk. Rudi Santoso (Ketua RT)', '081234567891', 'ketua123', 'KETUA_RT', 1),
   (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
   (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS pengguna (
 
 INSERT OR IGNORE INTO pengguna (id, username, nama_lengkap, no_hp, password, role, aktif)
 VALUES
-  (1, 'admin', 'Dimas Lukman (Super Admin)', '08119547505', 'admin123', 'ADMIN', 1),
+  (1, 'admin', 'Dimas Lukman (Super Admin)', '081234567890', 'admin123', 'ADMIN', 1),
   (2, 'ketuart', 'Bpk. Rudi Santoso (Ketua RT)', '081234567891', 'ketua123', 'KETUA_RT', 1),
   (3, 'wakilrt', 'Bpk. Heri Gunawan (Wakil Ketua)', '081234567892', 'wakil123', 'WAKIL_KETUA', 1),
   (4, 'bendahara', 'Ibu Ratna Dewi (Bendahara)', '081234567893', 'bendahara123', 'BENDAHARA', 1),

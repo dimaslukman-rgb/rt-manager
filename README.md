@@ -61,15 +61,18 @@ Sistem otentikasi 2-langkah (*Two-Factor Authentication*) berbasis peran (RBAC) 
 
 ---
 
-## 🔑 Akun Bawaan (Default Pengurus)
+## 🔑 Manajemen Akun & Hak Akses Pengurus
+
+> [!NOTE]
+> Demi keamanan, nomor handphone dan password tidak dipublikasikan secara terbuka pada dokumentasi publik. Akun dan hak akses dapat dikelola langsung melalui menu **Kelola Pengurus** oleh Super Admin.
 
 | Role | Username | No. Handphone | Password | Hak Akses |
 |---|---|---|---|---|
-| 👑 **Super Admin** | `admin` | `08119547505` | `admin123` | Akses Penuh + Kelola Pengurus |
-| 🏛️ **Ketua RT** | `ketuart` | `081234567891` | `ketua123` | Dashboard, Warga, Kas, Surat, Darurat |
-| 🤝 **Wakil Ketua** | `wakilrt` | `081234567892` | `wakil123` | Warga, Kegiatan, Ronda, Darurat |
-| 💰 **Bendahara** | `bendahara` | `081234567893` | `bendahara123` | Kas RT, Iuran KK, Export Excel/PDF |
-| 📝 **Sekretaris** | `sekretaris` | `081234567894` | `sekretaris123` | Data KK/Warga, Surat, Buku Tamu |
+| 👑 **Super Admin** | `admin` | `0812-xxxx-xxxx` | `********` | Akses Penuh + Kelola Pengurus |
+| 🏛️ **Ketua RT** | `ketuart` | `0812-xxxx-xxxx` | `********` | Dashboard, Warga, Kas, Surat, Darurat |
+| 🤝 **Wakil Ketua** | `wakilrt` | `0812-xxxx-xxxx` | `********` | Warga, Kegiatan, Ronda, Darurat |
+| 💰 **Bendahara** | `bendahara` | `0812-xxxx-xxxx` | `********` | Kas RT, Iuran KK, Export Excel/PDF |
+| 📝 **Sekretaris** | `sekretaris` | `0812-xxxx-xxxx` | `********` | Data KK/Warga, Surat, Buku Tamu |
 
 ---
 
