@@ -173,7 +173,7 @@ export default function MenuScreen() {
       ) : (
         <>
           <SectionTitle>Manajemen RT</SectionTitle>
-          {isSupabaseConfigured && <MenuCloudSync />}
+          <MenuCloudSync />
 
           <View style={styles.grid}>
             {/* Inbox Laporan Warga for all RT Officials */}
