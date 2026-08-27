@@ -20,6 +20,8 @@ import type { Pengguna, RoleUser } from '@/lib/types';
 
 const STORAGE_USER_KEY = '@rtmanager_current_user_v1';
 
+import { sendWhatsAppOtp, openWhatsAppDirect } from '@/lib/whatsapp-otp';
+
 export interface AuthContextValue {
   currentUser: Pengguna | null;
   role: RoleUser | null;
@@ -176,10 +178,19 @@ function MultiRoleLoginScreen({ onLoginSuccess }: { onLoginSuccess: (user: Pengg
       setTimer(60);
       setStep('otp');
 
-      // Show security OTP banner
-      setOtpNotification(
-        `🔐 KODE VERIFIKASI OTP: ${newOtp}\nKode keamanan untuk ${user.nama_lengkap} (${user.role}). Jangan berikan kepada siapapun.`
-      );
+      // Otomatis kirim OTP ke WhatsApp pengguna via Fonnte Gateway
+      const result = await sendWhatsAppOtp(db, user.no_hp, newOtp, user.nama_lengkap);
+      if (result.method === 'fonnte' && result.success) {
+        setOtpNotification(
+          `✅ KODE OTP TELAH DIKIRIM KE WHATSAPP!\nSilakan periksa pesan masuk WhatsApp pada nomor ${user.no_hp}.`
+        );
+      } else if (result.method === 'fallback') {
+        setOtpNotification(`⚠️ ${result.message}\n(Kode simulasi cadangan: ${newOtp})`);
+      } else {
+        setOtpNotification(
+          `🔐 KODE OTP LOGIN: ${newOtp}\n(WhatsApp Gateway belum diisi Token Fonnte di Pengaturan).`
+        );
+      }
     } catch (e: any) {
       showAlert('Gagal Login', e?.message || 'Terjadi kesalahan sistem.');
     } finally {
@@ -189,29 +200,24 @@ function MultiRoleLoginScreen({ onLoginSuccess }: { onLoginSuccess: (user: Pengg
 
   function handleKirimWhatsApp() {
     if (!targetUser || !generatedOtp) return;
-    let clean = targetUser.no_hp.replace(/[^\d]/g, '');
-    if (clean.startsWith('0')) clean = '62' + clean.slice(1);
-    if (clean.startsWith('8')) clean = '62' + clean;
-
-    const message = encodeURIComponent(
-      `🔐 *[KODE OTP RT MANAGER]*\n` +
-      `Halo *${targetUser.nama_lengkap}*,\n` +
-      `Kode verifikasi login Anda adalah: *${generatedOtp}*\n` +
-      `Gunakan kode ini untuk masuk sebagai *${targetUser.role}*.\n` +
-      `Jangan berikan kode ini kepada siapapun demi keamanan.`
-    );
-
-    Linking.openURL(`https://wa.me/${clean}?text=${message}`).catch(() => {
-      showAlert('Info OTP', `Kode OTP Anda adalah: ${generatedOtp}`);
-    });
+    openWhatsAppDirect(targetUser.no_hp, generatedOtp, targetUser.nama_lengkap);
   }
 
-  function handleResendOtp() {
+  async function handleResendOtp() {
+    if (!targetUser) return;
     const newOtp = generate6DigitOtp();
     setGeneratedOtp(newOtp);
     setTimer(60);
     setOtpInput('');
-    setOtpNotification(`🔐 KODE OTP BARU: ${newOtp}`);
+
+    const result = await sendWhatsAppOtp(db, targetUser.no_hp, newOtp, targetUser.nama_lengkap);
+    if (result.method === 'fonnte' && result.success) {
+      setOtpNotification(`✅ KODE OTP BARU TELAH DIKIRIM KE WHATSAPP!`);
+    } else if (result.method === 'fallback') {
+      setOtpNotification(`⚠️ ${result.message}\n(Kode baru: ${newOtp})`);
+    } else {
+      setOtpNotification(`🔐 KODE OTP BARU: ${newOtp}`);
+    }
   }
 
   async function handleVerifyOtp() {

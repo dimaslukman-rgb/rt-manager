@@ -20,6 +20,8 @@ export default function PengaturanScreen() {
   const [kecamatan, setKecamatan] = useState('');
   const [kota, setKota] = useState('');
   const [nominalIuran, setNominalIuran] = useState('');
+  const [waGatewayToken, setWaGatewayToken] = useState('');
+  const [waSenderNumber, setWaSenderNumber] = useState('');
 
   const [totalWarga, setTotalWarga] = useState(0);
   const [totalKeluarga, setTotalKeluarga] = useState(0);
@@ -37,6 +39,8 @@ export default function PengaturanScreen() {
         setKecamatan(p.nama_kecamatan);
         setKota(p.nama_kota);
         setNominalIuran(String(p.nominal_iuran));
+        setWaGatewayToken(p.wa_gateway_token || '');
+        setWaSenderNumber(p.wa_sender_number || '');
       }
       setTotalWarga(tw?.c ?? 0);
       setTotalKeluarga(tk?.c ?? 0);
@@ -56,12 +60,14 @@ export default function PengaturanScreen() {
     try {
       const nominal = Number(nominalIuran.replace(/[^0-9]/g, '')) || 50000;
       await db.runAsync(
-        'UPDATE pengaturan SET nama_rt=?, nama_kelurahan=?, nama_kecamatan=?, nama_kota=?, nominal_iuran=? WHERE id=1',
+        'UPDATE pengaturan SET nama_rt=?, nama_kelurahan=?, nama_kecamatan=?, nama_kota=?, nominal_iuran=?, wa_gateway_token=?, wa_sender_number=? WHERE id=1',
         namaRt.trim() || 'RT 01',
         kelurahan.trim(),
         kecamatan.trim(),
         kota.trim(),
-        nominal
+        nominal,
+        waGatewayToken.trim(),
+        waSenderNumber.trim()
       );
       Alert.alert('Berhasil', 'Pengaturan berhasil disimpan.');
     } finally {
@@ -121,6 +127,26 @@ export default function PengaturanScreen() {
         />
         <Text style={[styles.hint, { color: Colors[scheme].muted }]}>
           💡 Standar default: <Text style={{ fontWeight: '700', color: Colors[scheme].text }}>{formatRupiah(Number(nominalIuran.replace(/[^0-9]/g, '')) || 0)} / KK / bulan</Text>. (Digunakan sebagai nilai awal. Tiap KK dapat diatur nominal khusus yang berbeda di menu Data Keluarga / Iuran).
+        </Text>
+      </Card>
+
+      <SectionTitle>WhatsApp Gateway OTP (Fonnte)</SectionTitle>
+      <Card>
+        <Field
+          label="API Token Fonnte (Kirim WA Otomatis)"
+          value={waGatewayToken}
+          onChangeText={setWaGatewayToken}
+          placeholder="Contoh: xK3sP9Lz8vR1..."
+        />
+        <Field
+          label="Nomor WhatsApp Bot Pengirim (Opsional)"
+          value={waSenderNumber}
+          onChangeText={setWaSenderNumber}
+          placeholder="Contoh: 081234567890"
+          keyboardType="phone-pad"
+        />
+        <Text style={[styles.hint, { color: Colors[scheme].muted }]}>
+          💡 Dapatkan token gratis di <Text style={{ fontWeight: '700', color: Colors[scheme].primary }}>fonnte.com</Text>. Begitu token diisi, setiap login akan otomatis mengirimkan kode OTP sungguhan ke nomor WhatsApp tujuan.
         </Text>
       </Card>
 

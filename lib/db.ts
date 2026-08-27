@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 9;
+const DATABASE_VERSION = 10;
 
 export const DATABASE_NAME = 'rtmanager.db';
 
@@ -112,7 +112,9 @@ CREATE TABLE IF NOT EXISTS pengaturan (
   nama_kelurahan TEXT NOT NULL DEFAULT '',
   nama_kecamatan TEXT NOT NULL DEFAULT '',
   nama_kota TEXT NOT NULL DEFAULT '',
-  nominal_iuran INTEGER NOT NULL DEFAULT 50000
+  nominal_iuran INTEGER NOT NULL DEFAULT 50000,
+  wa_gateway_token TEXT NOT NULL DEFAULT '',
+  wa_sender_number TEXT NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS keluarga (
@@ -296,6 +298,18 @@ VALUES
   if (currentDbVersion < 8) {
     await ensureDefaultSecurity(db);
     currentDbVersion = 8;
+  }
+
+  if (currentDbVersion < 10) {
+    try {
+      await db.execAsync(`
+        ALTER TABLE pengaturan ADD COLUMN wa_gateway_token TEXT NOT NULL DEFAULT '';
+        ALTER TABLE pengaturan ADD COLUMN wa_sender_number TEXT NOT NULL DEFAULT '';
+      `);
+    } catch (e) {
+      console.log('Columns on pengaturan might already exist:', e);
+    }
+    currentDbVersion = 10;
   }
 
   await ensureDefaultAccounts(db);

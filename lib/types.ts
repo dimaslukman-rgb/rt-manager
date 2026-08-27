@@ -111,6 +111,8 @@ export interface Pengaturan {
   nama_kecamatan: string;
   nama_kota: string;
   nominal_iuran: number;
+  wa_gateway_token?: string;
+  wa_sender_number?: string;
 }
 
 export type KategoriDarurat =
