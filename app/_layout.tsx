@@ -49,11 +49,33 @@ export default function RootLayout() {
   );
 }
 
+const customLightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#dde3ec',
+    card: '#ffffff',
+    text: '#0f172a',
+    border: '#cbd5e1',
+  },
+};
+
+const customDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: '#0e1420',
+    card: '#161d29',
+    text: '#f3f4f6',
+    border: '#232b3a',
+  },
+};
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? customDarkTheme : customLightTheme}>
       <StatusBar style="auto" />
       <EmergencyAlertListener />
       <Stack>

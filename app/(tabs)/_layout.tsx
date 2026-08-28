@@ -94,7 +94,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].primary,
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: false,
       }}
       tabBar={(props) => <FloatingPillTabBar {...props} hiddenNames={hiddenNames} />}>
       <Tabs.Screen
