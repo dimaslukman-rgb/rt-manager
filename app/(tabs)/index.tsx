@@ -47,19 +47,27 @@ function BentoTile({
   const scheme = useColorScheme();
   const inner = (
     <Card style={styles.tileCard}>
-      <View style={[styles.tileIcon, { backgroundColor: chipColor }]}>
-        <Text style={{ fontSize: 15 }}>{emoji}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <View style={[styles.tileIcon, { backgroundColor: chipColor }]}>
+          <Text style={{ fontSize: 16 }}>{emoji}</Text>
+        </View>
+        <Text style={[styles.tileLabel, { color: Colors[scheme].muted }]}>{label}</Text>
       </View>
       <Text style={[styles.tileValue, { color: valueColor }]}>{value}</Text>
-      <Text style={[styles.tileLabel, { color: Colors[scheme].muted }]}>{label}</Text>
       {children}
     </Card>
   );
-  if (!onPress) return inner;
-  return (
+  const content = onPress ? (
     <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
       {inner}
     </Pressable>
+  ) : (
+    inner
+  );
+  return (
+    <View style={styles.tileWrapper}>
+      <StaggerIn index={index}>{content}</StaggerIn>
+    </View>
   );
 }
 
@@ -686,33 +694,37 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 10,
-    marginBottom: 6,
+    gap: 12,
+    marginBottom: 8,
   },
-  tile: {
-    width: '48.5%',
+  tileWrapper: {
+    flexGrow: 1,
+    flexShrink: 1,
+    minWidth: 200,
+    maxWidth: '100%',
   },
   tileCard: {
     marginBottom: 0,
-    padding: 14,
+    padding: 16,
+    borderRadius: 20,
+    minHeight: 110,
+    justifyContent: 'space-between',
   },
   tileIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
   },
   tileValue: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
+    marginTop: 4,
   },
   tileLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 2,
+    fontSize: 12,
+    fontWeight: '700',
   },
   progressTrack: {
     height: 6,

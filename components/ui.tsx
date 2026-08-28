@@ -245,20 +245,20 @@ const styles = StyleSheet.create({
   },
   maxWidthContainer: {
     width: '100%',
-    maxWidth: 980,
+    maxWidth: 1140,
     alignSelf: 'center',
   },
   card: {
-    borderRadius: 20,
+    borderRadius: 22,
     borderWidth: 1,
     padding: 16,
     marginBottom: 12,
-    // Soft diffused bento shadow (hairline border color comes from Colors)
-    shadowColor: '#1a2030',
-    shadowOpacity: 0.06,
+    // Soft diffused bento shadow
+    shadowColor: '#0f172a',
+    shadowOpacity: 0.05,
     shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   badge: {
     alignSelf: 'flex-start',
