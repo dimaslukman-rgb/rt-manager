@@ -53,10 +53,10 @@ const customLightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#fbf3e4',
+    background: '#0b1320',
     card: '#ffffff',
-    text: '#1c1917',
-    border: '#eeddc4',
+    text: '#0f172a',
+    border: 'rgba(255, 255, 255, 0.12)',
   },
 };
 
@@ -64,7 +64,7 @@ const customDarkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: '#0e1420',
+    background: '#0b1320',
     card: '#161d29',
     text: '#f3f4f6',
     border: '#232b3a',
