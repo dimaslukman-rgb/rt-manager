@@ -65,6 +65,20 @@ export default function WargaScreen() {
           ]}
         />
 
+        {/* Quick Action Buttons on Top */}
+        <View style={styles.topActionsRow}>
+          <Pressable
+            onPress={() => router.push('/keluarga/tambah')}
+            style={[styles.topActionBtn, { backgroundColor: Colors[scheme].primary }]}>
+            <Text style={styles.topActionBtnText}>+ Tambah Keluarga</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/warga/tambah')}
+            style={[styles.topActionBtn, { backgroundColor: Colors[scheme].info }]}>
+            <Text style={styles.topActionBtnText}>+ Tambah Warga</Text>
+          </Pressable>
+        </View>
+
         {q ? (
           <>
             <SectionTitleLocal>Hasil Pencarian ({filtered.length})</SectionTitleLocal>
@@ -192,26 +206,49 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
+  topActionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 12,
+  },
+  topActionBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#1c1917',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  topActionBtnText: {
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 13,
+  },
   fabRow: {
     position: 'absolute',
     right: 16,
-    bottom: 16,
+    bottom: 96,
     flexDirection: 'row',
     gap: 10,
+    zIndex: 99,
   },
   fabBtn: {
     borderRadius: 999,
-    paddingHorizontal: 18,
-    paddingVertical: 13,
-    shadowColor: '#000',
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    shadowColor: '#1c1917',
     shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 6,
   },
   fabBtnText: {
     color: '#fff',
-    fontWeight: '700',
-    fontSize: 15,
+    fontWeight: '800',
+    fontSize: 13,
   },
 });

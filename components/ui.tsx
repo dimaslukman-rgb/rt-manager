@@ -240,7 +240,7 @@ export function Screen({ children, style }: { children: React.ReactNode; style?:
 const styles = StyleSheet.create({
   screenContent: {
     padding: 16,
-    paddingBottom: 112,
+    paddingBottom: 160,
     flexGrow: 1,
   },
   maxWidthContainer: {
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 16,
-    bottom: 104,
+    bottom: 96,
     borderRadius: 999,
     paddingHorizontal: 20,
     paddingVertical: 14,
