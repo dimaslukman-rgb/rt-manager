@@ -11,6 +11,12 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { Text } from '@/components/Themed';
 import Colors from '@/constants/Colors';
@@ -20,6 +26,9 @@ import { isSirenPlaying, playPanicAlertBeep, startEmergencySiren, stopEmergencyS
 import { broadcastPanicAlert } from '@/components/emergency-listener';
 import type { KategoriDarurat, LaporanDarurat, StatusDarurat } from '@/lib/types';
 import { formatTanggal } from '@/lib/format';
+
+// Aurora Glass accent: animated panic trigger (glow loop). Created at module level.
+const PanicGlowPressable = Animated.createAnimatedComponent(Pressable);
 
 const KATEGORI_LIST: KategoriDarurat[] = [
   'Orang Mencurigakan',
@@ -37,6 +46,15 @@ export default function DaruratScreen() {
   const [loading, setLoading] = useState(true);
   const [laporanList, setLaporanList] = useState<LaporanDarurat[]>([]);
   const [sirenOn, setSirenOn] = useState(false);
+
+  // Aurora Glass glow: pulsing shadow/scale loop (~2.6s full cycle), disabled
+  // when the system "reduce motion" setting is on. Purely visual.
+  const reduceMotion = useReducedMotion();
+  const panicGlowStyle = useAnimatedStyle(() => ({
+    shadowOpacity: withRepeat(withTiming(0.7, { duration: 1300 }), -1, true),
+    shadowRadius: withRepeat(withTiming(20, { duration: 1300 }), -1, true),
+    transform: [{ scale: withRepeat(withTiming(1.02, { duration: 1300 }), -1, true) }],
+  }));
 
   // Form State
   const [nama, setNama] = useState('');
@@ -422,14 +440,18 @@ export default function DaruratScreen() {
             </View>
 
             {/* Panic Button Trigger */}
-            <Pressable
+            <PanicGlowPressable
               onPress={kirimPanicButton}
               disabled={submitting}
-              style={[styles.bigPanicBtn, { opacity: submitting ? 0.6 : 1 }]}>
+              style={[
+                styles.bigPanicBtn,
+                { opacity: submitting ? 0.6 : 1 },
+                reduceMotion ? null : panicGlowStyle,
+              ]}>
               <Text style={styles.bigPanicIcon}>🚨</Text>
               <Text style={styles.bigPanicText}>KIRIM SINYAL PANIC BUTTON</Text>
               <Text style={styles.bigPanicSub}>Bunyikan sirine & teruskan darurat ke Security</Text>
-            </Pressable>
+            </PanicGlowPressable>
           </Card>
         </View>
       ) : (

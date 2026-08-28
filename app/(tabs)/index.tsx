@@ -8,6 +8,7 @@ import { Text } from '@/components/Themed';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Badge, Card, EmptyState, LoadingState, Screen, SectionTitle } from '@/components/ui';
+import { GlassCard, StaggerIn } from '@/components/fx';
 import { bulanKey, currentTime, todayISO } from '@/lib/db';
 import { formatRupiah, formatTanggal } from '@/lib/format';
 import { useAuth } from '@/lib/auth';
@@ -24,17 +25,39 @@ interface DashboardData {
   laporanBaru: number;
 }
 
-function StatCard({ label, value, color, onPress }: { label: string; value: string; color: string; onPress?: () => void }) {
+function BentoTile({
+  index,
+  emoji,
+  label,
+  value,
+  chipColor,
+  valueColor,
+  onPress,
+  children,
+}: {
+  index: number;
+  emoji: string;
+  label: string;
+  value: string;
+  chipColor: string;
+  valueColor: string;
+  onPress?: () => void;
+  children?: React.ReactNode;
+}) {
   const scheme = useColorScheme();
   const inner = (
-    <Card style={styles.statCard}>
-      <Text style={[styles.statValue, { color }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: Colors[scheme].muted }]}>{label}</Text>
+    <Card style={styles.tileCard}>
+      <View style={[styles.tileIcon, { backgroundColor: chipColor }]}>
+        <Text style={{ fontSize: 15 }}>{emoji}</Text>
+      </View>
+      <Text style={[styles.tileValue, { color: valueColor }]}>{value}</Text>
+      <Text style={[styles.tileLabel, { color: Colors[scheme].muted }]}>{label}</Text>
+      {children}
     </Card>
   );
   if (!onPress) return inner;
   return (
-    <Pressable onPress={onPress} style={{ width: '48%' }}>
+    <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
       {inner}
     </Pressable>
   );
@@ -112,6 +135,9 @@ export default function BerandaScreen() {
   }
 
   const saldo = (data?.kasMasuk ?? 0) - (data?.kasKeluar ?? 0);
+  const iuranTotal = (data?.iuranLunas ?? 0) + (data?.iuranBelum ?? 0);
+  const iuranPct = iuranTotal > 0 ? Math.round(((data?.iuranLunas ?? 0) / iuranTotal) * 100) : 0;
+  const canManage = !isWarga && !isSecurity;
   const roleDisplay = currentUser?.role === 'ADMIN'
     ? '👑 SUPER ADMIN'
     : currentUser?.role === 'SECURITY'
@@ -129,136 +155,233 @@ export default function BerandaScreen() {
   return (
     <Screen>
       {/* 1. Header Foto Perumahan Hangtuah (Paling Atas) */}
-      <View style={[styles.bannerCard, { backgroundColor: Colors[scheme].card, borderColor: Colors[scheme].border }]}>
-        <Image
-          source={require('@/assets/images/perumahan_header.png')}
-          style={styles.bannerImage}
-        />
-        <View style={styles.bannerInfo}>
-          <Text style={styles.bannerTitle}>🏡 Perumahan Hangtuah</Text>
-          <Text style={[styles.bannerSub, { color: Colors[scheme].muted }]}>Grand Residence City</Text>
-        </View>
-      </View>
-
-      {/* 2. Hero Greeting Card */}
-      <Card style={styles.hero}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-          <Text style={styles.heroTitle}>Halo, {cleanName}! 👋</Text>
-          <View style={styles.roleHeaderBadge}>
-            <Text style={styles.roleHeaderBadgeText}>{roleDisplay}</Text>
+      <StaggerIn index={0}>
+        <View style={[styles.bannerCard, { backgroundColor: Colors[scheme].card, borderColor: Colors[scheme].border }]}>
+          <Image
+            source={require('@/assets/images/perumahan_header.png')}
+            style={styles.bannerImage}
+          />
+          <View style={styles.bannerInfo}>
+            <Text style={styles.bannerTitle}>🏡 Perumahan Hangtuah</Text>
+            <Text style={[styles.bannerSub, { color: Colors[scheme].muted }]}>Grand Residence City</Text>
           </View>
         </View>
-        <Text style={styles.heroSub}>
-          {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-        </Text>
-        {!isWarga && !isSecurity && (
-          <View style={styles.heroBadges}>
-            <Badge label={`${data?.iuranLunas ?? 0} KK lunas bulan ini`} variant="success" />
-            {data && data.iuranBelum > 0 && <Badge label={`${data.iuranBelum} KK belum bayar`} variant="warning" />}
-          </View>
-        )}
-      </Card>
+      </StaggerIn>
 
-      {/* 3. Panic Button Emergency Card */}
-      <Pressable onPress={() => router.push('/darurat')}>
-        <Card style={styles.panicBanner}>
-          <View style={styles.panicRow}>
-            <View style={styles.panicIconCircle}>
-              <Text style={{ fontSize: 26 }}>🚨</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.panicBannerTitle}>TOMBOL PANIK (PANIC BUTTON)</Text>
-              <Text style={styles.panicBannerSub}>
-                Panggil bantuan security & bunyikan alarm darurat
-              </Text>
-            </View>
-            <View style={styles.panicBadge}>
-              <Text style={styles.panicBadgeText}>DARURAT</Text>
+      {/* 2. Hero Greeting Card (bento hero) */}
+      <StaggerIn index={1}>
+        <GlassCard style={styles.hero}>
+          <View style={styles.heroTop}>
+            <Text style={[styles.heroTitle, { color: Colors[scheme].text }]} numberOfLines={1}>
+              Halo, {cleanName}! 👋
+            </Text>
+            <View style={[styles.roleBadge, { backgroundColor: Colors[scheme].primaryMuted }]}>
+              <Text style={[styles.roleBadgeText, { color: Colors[scheme].primary }]}>{roleDisplay}</Text>
             </View>
           </View>
-        </Card>
-      </Pressable>
+          <Text style={[styles.heroSub, { color: Colors[scheme].muted }]}>
+            {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+          </Text>
+          {!isWarga && !isSecurity && (
+            <View style={styles.heroBadges}>
+              <Badge label={`${data?.iuranLunas ?? 0} KK lunas bulan ini`} variant="success" />
+              {data && data.iuranBelum > 0 && <Badge label={`${data.iuranBelum} KK belum bayar`} variant="warning" />}
+            </View>
+          )}
+        </GlassCard>
+      </StaggerIn>
 
-      {/* 4. Menu Khusus "Lapor Pak RT!" untuk Warga / Pengurus */}
-      <Pressable onPress={() => router.push('/lapor-rt')}>
-        <Card style={styles.laporBanner}>
-          <View style={styles.laporRow}>
-            <View style={styles.laporIconCircle}>
-              <Text style={{ fontSize: 24 }}>📢</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.laporBannerTitle}>LAPOR PAK RT!</Text>
-              <Text style={styles.laporBannerSub}>
-                Kirim aduan lingkungan, fasilitas rusak, atau usulan ke pengurus
-              </Text>
-            </View>
-            <View style={styles.laporBadge}>
-              <Text style={styles.laporBadgeText}>BUAT ADUAN →</Text>
-            </View>
-          </View>
-        </Card>
-      </Pressable>
-
-      {/* 5. Menu Khusus "Petugas Security & Jadwal Shift" di Beranda */}
-      <Pressable onPress={() => router.push('/security')}>
-        <Card style={styles.securityBanner}>
-          <View style={styles.securityRow}>
-            <View style={styles.securityIconCircle}>
-              <Text style={{ fontSize: 24 }}>👮</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={styles.securityBannerTitle}>SECURITY & JADWAL SHIFT</Text>
-                <View style={styles.securityLiveTag}>
-                  <Text style={styles.securityLiveTagText}>ON DUTY</Text>
+      {/* 3. Hero Saldo Kas (Aurora Glass: gradient base via layered Views) */}
+      <StaggerIn index={2}>
+        <GlassCard>
+          <View style={styles.kasBanner}>
+            <View style={[styles.kasBase, { backgroundColor: Colors[scheme].heroFrom }]} />
+            <View style={[styles.kasShade, { backgroundColor: Colors[scheme].heroTo }]} />
+            <View style={styles.kasGlowA} />
+            <View style={styles.kasGlowB} />
+            <View style={styles.kasContent}>
+              <Text style={styles.kasLabel}>💰 Saldo Kas RT</Text>
+              <Text style={styles.kasValue}>{formatRupiah(saldo)}</Text>
+              <View style={styles.kasFlowRow}>
+                <View style={styles.kasFlowChip}>
+                  <Text style={styles.kasFlowText}>▲ Masuk {formatRupiah(data?.kasMasuk ?? 0)}</Text>
+                </View>
+                <View style={styles.kasFlowChip}>
+                  <Text style={styles.kasFlowText}>▼ Keluar {formatRupiah(data?.kasKeluar ?? 0)}</Text>
                 </View>
               </View>
-              <Text style={styles.securityBannerSub}>
-                Pos Gerbang Utama · Siaga 24 Jam & Kontak Satpam
-              </Text>
-            </View>
-            <View style={styles.securityBadge}>
-              <Text style={styles.securityBadgeText}>JADWAL →</Text>
             </View>
           </View>
-        </Card>
-      </Pressable>
+        </GlassCard>
+      </StaggerIn>
 
-      {/* 5. Khusus Pengurus RT: Notifikasi Inbox Laporan Masuk */}
-      {!isWarga && (data?.laporanBaru ?? 0) > 0 && (
-        <Pressable onPress={() => router.push('/inbox')}>
-          <Card style={styles.inboxAlertCard}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-                <Text style={{ fontSize: 22 }}>📥</Text>
-                <View>
-                  <Text style={styles.inboxAlertTitle}>Kotak Masuk (Inbox) Warga</Text>
-                  <Text style={styles.inboxAlertSub}>
-                    Ada <Text style={{ fontWeight: '800', color: '#dc2626' }}>{data?.laporanBaru} laporan baru</Text> dari warga yang perlu ditindaklanjuti.
-                  </Text>
-                </View>
+      {/* 4. Panic Button Emergency Card (Aurora Glass + subtle red accent) */}
+      <StaggerIn index={3}>
+        <Pressable onPress={() => router.push('/darurat')}>
+          <GlassCard
+            style={[
+              styles.panicBanner,
+              {
+                backgroundColor: scheme === 'dark' ? 'rgba(248,113,113,0.20)' : 'rgba(220,38,38,0.08)',
+                borderColor: scheme === 'dark' ? 'rgba(248,113,113,0.40)' : 'rgba(220,38,38,0.30)',
+              },
+            ]}>
+            <View style={styles.panicRow}>
+              <View
+                style={[
+                  styles.panicIconCircle,
+                  { backgroundColor: scheme === 'dark' ? 'rgba(248,113,113,0.22)' : 'rgba(220,38,38,0.14)' },
+                ]}>
+                <Text style={{ fontSize: 24 }}>🚨</Text>
               </View>
-              <View style={styles.inboxCountBadge}>
-                <Text style={styles.inboxCountText}>{data?.laporanBaru}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.panicBannerTitle, { color: Colors[scheme].danger }]}>
+                  TOMBOL PANIK (PANIC BUTTON)
+                </Text>
+                <Text style={[styles.panicBannerSub, { color: Colors[scheme].muted }]}>
+                  Panggil bantuan security & bunyikan alarm darurat
+                </Text>
+              </View>
+              <View style={[styles.panicBadge, { backgroundColor: Colors[scheme].danger }]}>
+                <Text style={styles.panicBadgeText}>DARURAT</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </Pressable>
+      </StaggerIn>
+
+      {/* 5. Menu Khusus "Lapor Pak RT!" untuk Warga / Pengurus */}
+      <StaggerIn index={4}>
+        <Pressable onPress={() => router.push('/lapor-rt')}>
+          <Card style={styles.actionBanner}>
+            <View style={styles.actionRow}>
+              <View style={[styles.actionIcon, { backgroundColor: Colors[scheme].infoMuted }]}>
+                <Text style={{ fontSize: 22 }}>📢</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.actionBannerTitle, { color: Colors[scheme].info }]}>LAPOR PAK RT!</Text>
+                <Text style={[styles.actionBannerSub, { color: Colors[scheme].muted }]}>
+                  Kirim aduan lingkungan, fasilitas rusak, atau usulan ke pengurus
+                </Text>
+              </View>
+              <View style={[styles.actionBadge, { backgroundColor: Colors[scheme].infoMuted }]}>
+                <Text style={[styles.actionBadgeText, { color: Colors[scheme].info }]}>BUAT ADUAN →</Text>
               </View>
             </View>
           </Card>
         </Pressable>
+      </StaggerIn>
+
+      {/* 6. Menu Khusus "Petugas Security & Jadwal Shift" di Beranda */}
+      <StaggerIn index={5}>
+        <Pressable onPress={() => router.push('/security')}>
+          <Card style={styles.actionBanner}>
+            <View style={styles.actionRow}>
+              <View style={[styles.actionIcon, { backgroundColor: Colors[scheme].primaryMuted }]}>
+                <Text style={{ fontSize: 22 }}>👮</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <View style={styles.actionTitleRow}>
+                  <Text style={[styles.actionBannerTitle, { color: Colors[scheme].text }]}>
+                    SECURITY & JADWAL SHIFT
+                  </Text>
+                  <View style={[styles.securityLiveTag, { backgroundColor: Colors[scheme].success }]}>
+                    <Text style={styles.securityLiveTagText}>ON DUTY</Text>
+                  </View>
+                </View>
+                <Text style={[styles.actionBannerSub, { color: Colors[scheme].muted }]}>
+                  Pos Gerbang Utama · Siaga 24 Jam & Kontak Satpam
+                </Text>
+              </View>
+              <View style={[styles.actionBadge, { backgroundColor: Colors[scheme].primaryMuted }]}>
+                <Text style={[styles.actionBadgeText, { color: Colors[scheme].primary }]}>JADWAL →</Text>
+              </View>
+            </View>
+          </Card>
+        </Pressable>
+      </StaggerIn>
+
+      {/* 7. Khusus Pengurus RT: Notifikasi Inbox Laporan Masuk */}
+      {!isWarga && (data?.laporanBaru ?? 0) > 0 && (
+        <StaggerIn index={6}>
+          <Pressable onPress={() => router.push('/inbox')}>
+            <Card
+              style={[
+                styles.inboxAlertCard,
+                { backgroundColor: Colors[scheme].dangerMuted, borderColor: 'rgba(220,38,38,0.25)' },
+              ]}>
+              <View style={styles.inboxRow}>
+                <View style={styles.inboxLeft}>
+                  <Text style={{ fontSize: 22 }}>📥</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.inboxAlertTitle, { color: Colors[scheme].text }]}>
+                      Kotak Masuk (Inbox) Warga
+                    </Text>
+                    <Text style={[styles.inboxAlertSub, { color: Colors[scheme].muted }]}>
+                      Ada{' '}
+                      <Text style={{ fontWeight: '800', color: Colors[scheme].danger }}>
+                        {data?.laporanBaru} laporan baru
+                      </Text>{' '}
+                      dari warga yang perlu ditindaklanjuti.
+                    </Text>
+                  </View>
+                </View>
+                <View style={[styles.inboxCountBadge, { backgroundColor: Colors[scheme].danger }]}>
+                  <Text style={styles.inboxCountText}>{data?.laporanBaru}</Text>
+                </View>
+              </View>
+            </Card>
+          </Pressable>
+        </StaggerIn>
       )}
 
-      <SectionTitle>Ringkasan</SectionTitle>
-      <View style={styles.statsRow}>
-        <StatCard label="Warga" value={String(data?.totalWarga ?? 0)} color={Colors[scheme].info} />
-        <StatCard label="Keluarga" value={String(data?.totalKeluarga ?? 0)} color={Colors[scheme].primary} />
-        <StatCard
-          label="Kas RT"
-          value={formatRupiah(saldo)}
-          color={saldo >= 0 ? Colors[scheme].success : Colors[scheme].danger}
+      <SectionTitle>Ringkasan Informasi</SectionTitle>
+      <View style={styles.statsGrid}>
+        <BentoTile
+          index={7}
+          emoji="👥"
+          label="Total Warga"
+          value={`${data?.totalWarga ?? 0} Jiwa`}
+          chipColor={Colors[scheme].infoMuted}
+          valueColor={Colors[scheme].info}
+          onPress={canManage ? () => router.push('/(tabs)/warga') : undefined}
         />
-        <StatCard
-          label="Tagihan iuran"
-          value={formatRupiah(data?.iuranNominalBelum ?? 0)}
-          color={Colors[scheme].warning}
+        <BentoTile
+          index={8}
+          emoji="👨‍👩‍👧‍👦"
+          label="Total Keluarga"
+          value={`${data?.totalKeluarga ?? 0} KK`}
+          chipColor={Colors[scheme].primaryMuted}
+          valueColor={Colors[scheme].primary}
+          onPress={canManage ? () => router.push('/(tabs)/warga') : undefined}
+        />
+        <BentoTile
+          index={9}
+          emoji="🧾"
+          label="Iuran Bulan Ini"
+          value={`${iuranPct}% lunas`}
+          chipColor={Colors[scheme].warningMuted}
+          valueColor={Colors[scheme].text}
+          onPress={canManage ? () => router.push('/(tabs)/keuangan') : undefined}>
+          <View style={[styles.progressTrack, { backgroundColor: Colors[scheme].primaryMuted }]}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${iuranPct}%`, backgroundColor: Colors[scheme].primary },
+              ]}
+            />
+          </View>
+          <Text style={[styles.progressText, { color: Colors[scheme].muted }]}>
+            {data?.iuranLunas ?? 0}/{iuranTotal} KK lunas
+          </Text>
+        </BentoTile>
+        <BentoTile
+          index={10}
+          emoji="📣"
+          label="Laporan Baru"
+          value={String(data?.laporanBaru ?? 0)}
+          chipColor={Colors[scheme].dangerMuted}
+          valueColor={(data?.laporanBaru ?? 0) > 0 ? Colors[scheme].danger : Colors[scheme].muted}
         />
       </View>
 
@@ -308,178 +431,15 @@ export default function BerandaScreen() {
 }
 
 const styles = StyleSheet.create({
-  panicBanner: {
-    backgroundColor: '#dc2626',
-    borderColor: 'transparent',
-    padding: 14,
-    marginBottom: 10,
-  },
-  panicRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  panicIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  panicBannerTitle: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  panicBannerSub: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  panicBadge: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  panicBadgeText: {
-    color: '#dc2626',
-    fontWeight: '900',
-    fontSize: 10,
-  },
-  laporBanner: {
-    backgroundColor: '#0284c7',
-    borderColor: 'transparent',
-    padding: 14,
-    marginBottom: 10,
-  },
-  laporRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  laporIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  laporBannerTitle: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  laporBannerSub: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  laporBadge: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  laporBadgeText: {
-    color: '#0284c7',
-    fontWeight: '900',
-    fontSize: 10,
-  },
-  securityBanner: {
-    backgroundColor: '#065f46',
-    borderColor: 'transparent',
-    padding: 14,
-    marginBottom: 10,
-  },
-  securityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  securityIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  securityBannerTitle: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  securityLiveTag: {
-    backgroundColor: '#10b981',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  securityLiveTagText: {
-    color: '#fff',
-    fontSize: 9,
-    fontWeight: '900',
-  },
-  securityBannerSub: {
-    color: 'rgba(255,255,255,0.9)',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  securityBadge: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  securityBadgeText: {
-    color: '#065f46',
-    fontWeight: '900',
-    fontSize: 10,
-  },
-  inboxAlertCard: {
-    backgroundColor: '#fee2e2',
-    borderColor: '#fca5a5',
-    padding: 12,
-    marginBottom: 10,
-  },
-  inboxAlertTitle: {
-    color: '#991b1b',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  inboxAlertSub: {
-    color: '#7f1d1d',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  inboxCountBadge: {
-    backgroundColor: '#dc2626',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inboxCountText: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '900',
-  },
   bannerCard: {
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
     marginBottom: 12,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#1a2030',
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
     elevation: 3,
   },
   bannerImage: {
@@ -492,38 +452,41 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   bannerTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '800',
   },
   bannerSub: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     marginTop: 2,
   },
   hero: {
-    backgroundColor: '#0e9f6e',
-    borderColor: 'transparent',
-    marginBottom: 10,
+    padding: 16,
+    marginBottom: 12,
   },
-  roleHeaderBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+  heroTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginBottom: 2,
+  },
+  heroTitle: {
+    fontSize: 21,
+    fontWeight: '800',
+    flexShrink: 1,
+  },
+  roleBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 999,
   },
-  roleHeaderBadgeText: {
-    color: '#fff',
-    fontSize: 11,
+  roleBadgeText: {
+    fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.5,
   },
-  heroTitle: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: '800',
-  },
   heroSub: {
-    color: 'rgba(255,255,255,0.85)',
     marginTop: 4,
     fontSize: 13,
   },
@@ -533,21 +496,234 @@ const styles = StyleSheet.create({
     marginTop: 12,
     flexWrap: 'wrap',
   },
-  statsRow: {
+  kasBase: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  kasShade: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '65%',
+    opacity: 0.55,
+  },
+  kasGlowA: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    top: -50,
+    right: -30,
+  },
+  kasGlowB: {
+    position: 'absolute',
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: 'rgba(0,0,0,0.12)',
+    bottom: -40,
+    left: -25,
+  },
+  kasContent: {
+    padding: 16,
+  },
+  kasLabel: {
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  kasValue: {
+    color: '#fff',
+    fontSize: 26,
+    fontWeight: '800',
+    marginTop: 2,
+  },
+  kasFlowRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 12,
+  },
+  kasFlowChip: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  kasFlowText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  panicBanner: {
+    padding: 14,
+    marginBottom: 10,
+  },
+  panicRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  panicIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  panicBannerTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  panicBannerSub: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  panicBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  panicBadgeText: {
+    color: '#fff',
+    fontWeight: '900',
+    fontSize: 10,
+  },
+  actionBanner: {
+    padding: 14,
+    marginBottom: 10,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  actionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  actionBannerTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  actionBannerSub: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  actionBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  actionBadgeText: {
+    fontWeight: '800',
+    fontSize: 10,
+  },
+  securityLiveTag: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  securityLiveTagText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  inboxAlertCard: {
+    padding: 12,
+    marginBottom: 10,
+  },
+  inboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  inboxLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  inboxAlertTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  inboxAlertSub: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  inboxCountBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inboxCountText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    rowGap: 10,
+    marginBottom: 6,
   },
-  statCard: {
-    width: '100%',
+  tile: {
+    width: '48.5%',
   },
-  statValue: {
+  tileCard: {
+    marginBottom: 0,
+    padding: 14,
+  },
+  tileIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  tileValue: {
     fontSize: 20,
     fontWeight: '800',
   },
-  statLabel: {
-    fontSize: 12,
+  tileLabel: {
+    fontSize: 11,
+    fontWeight: '600',
     marginTop: 2,
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginTop: 10,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 10,
+    marginTop: 4,
   },
   rowBetween: {
     flexDirection: 'row',

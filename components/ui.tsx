@@ -223,14 +223,16 @@ export function MenuCard({
   );
 }
 
-export function Screen({ children }: { children: React.ReactNode }) {
+export function Screen({ children, style }: { children: React.ReactNode; style?: object }) {
   const scheme = useColorScheme();
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: Colors[scheme].background }}
+      style={[{ flex: 1, backgroundColor: Colors[scheme].background }, style]}
       contentContainerStyle={styles.screenContent}
       keyboardShouldPersistTaps="handled">
-      {children}
+      <View style={styles.maxWidthContainer}>
+        {children}
+      </View>
     </ScrollView>
   );
 }
@@ -238,14 +240,25 @@ export function Screen({ children }: { children: React.ReactNode }) {
 const styles = StyleSheet.create({
   screenContent: {
     padding: 16,
-    paddingBottom: 96,
+    paddingBottom: 112,
     flexGrow: 1,
   },
+  maxWidthContainer: {
+    width: '100%',
+    maxWidth: 980,
+    alignSelf: 'center',
+  },
   card: {
-    borderRadius: 14,
+    borderRadius: 20,
     borderWidth: 1,
     padding: 16,
     marginBottom: 12,
+    // Soft diffused bento shadow (hairline border color comes from Colors)
+    shadowColor: '#1a2030',
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 3,
   },
   badge: {
     alignSelf: 'flex-start',
@@ -266,15 +279,15 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 16,
-    bottom: 16,
+    bottom: 104,
     borderRadius: 999,
     paddingHorizontal: 20,
     paddingVertical: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
+    shadowColor: '#1a2030',
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 5,
   },
   fabText: {
     color: '#fff',
@@ -299,7 +312,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 15,
@@ -321,7 +334,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   button: {
-    borderRadius: 12,
+    borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',

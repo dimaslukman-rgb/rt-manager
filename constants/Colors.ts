@@ -4,10 +4,10 @@ const tintColorDark = '#34d399';
 export default {
   light: {
     text: '#111827',
-    background: '#f5f7f6',
+    background: '#f5f7fb',
     card: '#ffffff',
-    border: '#e5e7eb',
-    muted: '#6b7280',
+    border: '#e9edf4',
+    muted: '#7b8494',
     tint: tintColorLight,
     tabIconDefault: '#9ca3af',
     tabIconSelected: tintColorLight,
@@ -21,13 +21,18 @@ export default {
     warningMuted: '#fef3c7',
     info: '#2563eb',
     infoMuted: '#dbeafe',
+    // Bento Calm / Aurora Glass accents (additive keys)
+    heroFrom: '#12b981',
+    heroTo: '#0c7a56',
+    glassCard: 'rgba(255,255,255,0.65)',
+    glassBorder: 'rgba(255,255,255,0.90)',
   },
   dark: {
     text: '#f3f4f6',
-    background: '#0f1115',
-    card: '#1a1e24',
-    border: '#2b3038',
-    muted: '#9ca3af',
+    background: '#0e1420',
+    card: '#161d29',
+    border: '#232b3a',
+    muted: '#8b94a7',
     tint: tintColorDark,
     tabIconDefault: '#6b7280',
     tabIconSelected: tintColorDark,
@@ -41,5 +46,10 @@ export default {
     warningMuted: '#451a03',
     info: '#60a5fa',
     infoMuted: '#172554',
+    // Bento Calm / Aurora Glass accents (additive keys)
+    heroFrom: '#2dd4a0',
+    heroTo: '#0f6b4d',
+    glassCard: 'rgba(255,255,255,0.08)',
+    glassBorder: 'rgba(255,255,255,0.14)',
   },
 };
