@@ -53,10 +53,10 @@ const customLightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#dde3ec',
+    background: '#fbf3e4',
     card: '#ffffff',
-    text: '#0f172a',
-    border: '#cbd5e1',
+    text: '#1c1917',
+    border: '#eeddc4',
   },
 };
 
