@@ -162,143 +162,156 @@ export default function BerandaScreen() {
 
   return (
     <Screen>
-      {/* 1. Header Foto Perumahan Hangtuah (Paling Atas) */}
+      {/* 1. Header Foto Perumahan Hangtuah */}
       <StaggerIn index={0}>
         <View style={[styles.bannerCard, { backgroundColor: Colors[scheme].card, borderColor: Colors[scheme].border }]}>
           <Image
             source={require('@/assets/images/perumahan_header.png')}
             style={styles.bannerImage}
           />
-          <View style={styles.bannerInfo}>
-            <Text style={styles.bannerTitle}>🏡 Perumahan Hangtuah</Text>
-            <Text style={[styles.bannerSub, { color: Colors[scheme].muted }]}>Grand Residence City</Text>
+          <View style={styles.bannerOverlay}>
+            <View style={styles.bannerBadge}>
+              <Text style={styles.bannerBadgeText}>RT 04 / RW 08</Text>
+            </View>
+            <Text style={styles.bannerTitle}>Perumahan Hangtuah</Text>
+            <Text style={styles.bannerSub}>Grand Residence City · Lingkungan Nyaman, Sejuk & Bersih</Text>
           </View>
         </View>
       </StaggerIn>
 
-      {/* 2. Hero Greeting Card (bento hero) */}
+      {/* 2. Hero Greeting Card */}
       <StaggerIn index={1}>
-        <GlassCard style={styles.hero}>
-          <View style={styles.heroTop}>
-            <Text style={[styles.heroTitle, { color: Colors[scheme].text }]} numberOfLines={1}>
-              Halo, {cleanName}! 👋
-            </Text>
-            <View style={[styles.roleBadge, { backgroundColor: Colors[scheme].primaryMuted }]}>
-              <Text style={[styles.roleBadgeText, { color: Colors[scheme].primary }]}>{roleDisplay}</Text>
+        <Card style={styles.hero}>
+          <View style={styles.heroRow}>
+            <View style={[styles.heroAvatar, { backgroundColor: Colors[scheme].primaryMuted }]}>
+              <Text style={{ fontSize: 20 }}>👑</Text>
             </View>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <Text style={[styles.heroTitle, { color: Colors[scheme].text }]} numberOfLines={1}>
+                  Halo, {cleanName}! 👋
+                </Text>
+                <View style={[styles.roleBadge, { backgroundColor: Colors[scheme].primaryMuted }]}>
+                  <Text style={[styles.roleBadgeText, { color: Colors[scheme].primary }]}>{roleDisplay}</Text>
+                </View>
+              </View>
+              <Text style={[styles.heroSub, { color: Colors[scheme].muted }]}>
+                {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} · Sistem & Database Cloud Sinkron
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => router.push('/pengaturan')}
+              style={[styles.syncButton, { backgroundColor: Colors[scheme].primaryMuted }]}>
+              <Text style={[styles.syncButtonText, { color: Colors[scheme].primary }]}>☁️ Cloud</Text>
+            </Pressable>
           </View>
-          <Text style={[styles.heroSub, { color: Colors[scheme].muted }]}>
-            {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-          </Text>
-          {!isWarga && !isSecurity && (
-            <View style={styles.heroBadges}>
-              <Badge label={`${data?.iuranLunas ?? 0} KK lunas bulan ini`} variant="success" />
-              {data && data.iuranBelum > 0 && <Badge label={`${data.iuranBelum} KK belum bayar`} variant="warning" />}
-            </View>
-          )}
-        </GlassCard>
+        </Card>
       </StaggerIn>
 
-      {/* 3. Hero Saldo Kas (Aurora Glass: gradient base via layered Views) */}
+      {/* 3. Hero Saldo Kas (Aurora Glass) */}
       <StaggerIn index={2}>
-        <GlassCard>
-          <View style={styles.kasBanner}>
-            <View style={[styles.kasBase, { backgroundColor: Colors[scheme].heroFrom }]} />
-            <View style={[styles.kasShade, { backgroundColor: Colors[scheme].heroTo }]} />
-            <View style={styles.kasGlowA} />
-            <View style={styles.kasGlowB} />
-            <View style={styles.kasContent}>
-              <Text style={styles.kasLabel}>💰 Saldo Kas RT</Text>
-              <Text style={styles.kasValue}>{formatRupiah(saldo)}</Text>
-              <View style={styles.kasFlowRow}>
-                <View style={styles.kasFlowChip}>
-                  <Text style={styles.kasFlowText}>▲ Masuk {formatRupiah(data?.kasMasuk ?? 0)}</Text>
-                </View>
-                <View style={styles.kasFlowChip}>
-                  <Text style={styles.kasFlowText}>▼ Keluar {formatRupiah(data?.kasKeluar ?? 0)}</Text>
-                </View>
-              </View>
+        <View style={styles.auroraHeroCard}>
+          <View style={styles.kasTopRow}>
+            <Text style={styles.kasLabel}>💰 SALDO KAS RT 04 · AGUSTUS 2026</Text>
+            <View style={styles.kasPill}>
+              <Text style={styles.kasPillText}>Kas Masuk Lunas</Text>
             </View>
           </View>
-        </GlassCard>
-      </StaggerIn>
-
-      {/* 4. Panic Button Emergency Card (Aurora Glowing Red Accent) */}
-      <StaggerIn index={3}>
-        <Pressable onPress={() => router.push('/darurat')}>
-          <View style={styles.auroraPanicCard}>
-            <View style={styles.panicRow}>
-              <View style={styles.panicIconCircle}>
-                <Text style={{ fontSize: 24 }}>🚨</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.panicBannerTitle}>
-                  TOMBOL PANIK (PANIC BUTTON)
-                </Text>
-                <Text style={styles.panicBannerSub}>
-                  Panggil bantuan security & bunyikan alarm darurat
-                </Text>
-              </View>
-              <View style={styles.panicBadge}>
-                <Text style={styles.panicBadgeText}>DARURAT</Text>
-              </View>
+          <Text style={styles.kasValue}>{formatRupiah(saldo)}</Text>
+          <View style={styles.kasSubRow}>
+            <View style={styles.kasChip}>
+              <Text style={styles.kasChipText}>▲ {formatRupiah(data?.kasMasuk ?? 0)}</Text>
+            </View>
+            <Text style={styles.kasSubText}>Pemasukan iuran bulan ini</Text>
+          </View>
+          <View style={styles.kasBottomGrid}>
+            <View style={styles.kasMiniBox}>
+              <Text style={styles.kasMiniLabel}>Total Kas Masuk</Text>
+              <Text style={styles.kasMiniValue}>{formatRupiah(data?.kasMasuk ?? 0)}</Text>
+            </View>
+            <View style={styles.kasMiniBox}>
+              <Text style={styles.kasMiniLabelRed}>Total Pengeluaran</Text>
+              <Text style={styles.kasMiniValue}>{formatRupiah(data?.kasKeluar ?? 0)}</Text>
             </View>
           </View>
-        </Pressable>
+        </View>
       </StaggerIn>
 
-      {/* 5. Menu Khusus "Lapor Pak RT!" untuk Warga / Pengurus */}
-      <StaggerIn index={4}>
-        <Pressable onPress={() => router.push('/lapor-rt')}>
-          <Card style={styles.actionBanner}>
-            <View style={styles.actionRow}>
-              <View style={[styles.actionIcon, { backgroundColor: Colors[scheme].infoMuted }]}>
-                <Text style={{ fontSize: 22 }}>📢</Text>
+      {/* 4. Action Deck: Tombol Panik + Lapor Pak RT + Security On-Duty */}
+      <View style={styles.actionDeckRow}>
+        {/* Panic Button */}
+        <Pressable onPress={() => router.push('/darurat')} style={styles.deckColPanic}>
+          <StaggerIn index={3}>
+            <View style={styles.auroraPanicCard}>
+              <View style={styles.panicTop}>
+                <View style={styles.panicIconCircle}>
+                  <Text style={{ fontSize: 20 }}>🚨</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.panicBannerTitle}>TOMBOL PANIK</Text>
+                  <Text style={styles.panicBannerSub}>Bantuan Darurat & Sirine Pos</Text>
+                </View>
+                <View style={styles.panicBadge}>
+                  <Text style={styles.panicBadgeText}>DARURAT</Text>
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.actionBannerTitle, { color: Colors[scheme].info }]}>LAPOR PAK RT!</Text>
-                <Text style={[styles.actionBannerSub, { color: Colors[scheme].muted }]}>
-                  Kirim aduan lingkungan, fasilitas rusak, atau usulan ke pengurus
-                </Text>
-              </View>
-              <View style={[styles.actionBadge, { backgroundColor: Colors[scheme].infoMuted }]}>
-                <Text style={[styles.actionBadgeText, { color: Colors[scheme].info }]}>BUAT ADUAN →</Text>
+              <View style={styles.panicBottom}>
+                <Text style={styles.panicBottomText}>Satpam: Sirine Otomatis</Text>
+                <Text style={styles.panicBottomLink}>Tekan Darurat →</Text>
               </View>
             </View>
-          </Card>
+          </StaggerIn>
         </Pressable>
-      </StaggerIn>
 
-      {/* 6. Menu Khusus "Petugas Security & Jadwal Shift" di Beranda */}
-      <StaggerIn index={5}>
-        <Pressable onPress={() => router.push('/security')}>
-          <Card style={styles.actionBanner}>
-            <View style={styles.actionRow}>
-              <View style={[styles.actionIcon, { backgroundColor: Colors[scheme].primaryMuted }]}>
-                <Text style={{ fontSize: 22 }}>👮</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <View style={styles.actionTitleRow}>
-                  <Text style={[styles.actionBannerTitle, { color: Colors[scheme].text }]}>
-                    SECURITY & JADWAL SHIFT
-                  </Text>
-                  <View style={[styles.securityLiveTag, { backgroundColor: Colors[scheme].success }]}>
-                    <Text style={styles.securityLiveTagText}>ON DUTY</Text>
+        {/* Lapor Pak RT */}
+        <Pressable onPress={() => router.push('/lapor-rt')} style={styles.deckCol}>
+          <StaggerIn index={4}>
+            <Card style={styles.actionCard}>
+              <View style={styles.actionTop}>
+                <View style={[styles.actionIcon, { backgroundColor: Colors[scheme].warningMuted }]}>
+                  <Text style={{ fontSize: 18 }}>📢</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                    <Text style={[styles.actionCardTitle, { color: Colors[scheme].text }]}>LAPOR PAK RT!</Text>
+                    {(data?.laporanBaru ?? 0) > 0 && (
+                      <View style={styles.actionCountBadge}>
+                        <Text style={styles.actionCountText}>{data?.laporanBaru} Baru</Text>
+                      </View>
+                    )}
                   </View>
+                  <Text style={[styles.actionCardSub, { color: Colors[scheme].muted }]}>
+                    Kirim aduan warga anonim
+                  </Text>
                 </View>
-                <Text style={[styles.actionBannerSub, { color: Colors[scheme].muted }]}>
-                  Pos Gerbang Utama · Siaga 24 Jam & Kontak Satpam
-                </Text>
               </View>
-              <View style={[styles.actionBadge, { backgroundColor: Colors[scheme].primaryMuted }]}>
-                <Text style={[styles.actionBadgeText, { color: Colors[scheme].primary }]}>JADWAL →</Text>
+              <View style={styles.actionBottom}>
+                <Text style={[styles.actionBottomText, { color: Colors[scheme].muted }]}>Tanggapan Pengurus</Text>
+                <Text style={[styles.actionBottomLink, { color: Colors[scheme].primary }]}>Buat Aduan →</Text>
               </View>
-            </View>
-          </Card>
+            </Card>
+          </StaggerIn>
         </Pressable>
-      </StaggerIn>
 
-      {/* 7. Khusus Pengurus RT: Notifikasi Inbox Laporan Masuk */}
+        {/* Security On-Duty */}
+        <Pressable onPress={() => router.push('/security')} style={styles.deckCol}>
+          <StaggerIn index={5}>
+            <Card style={styles.actionCard}>
+              <View style={styles.securityTop}>
+                <Text style={[styles.securityTitle, { color: Colors[scheme].muted }]}>SECURITY ON DUTY</Text>
+                <View style={styles.securityPingDot} />
+              </View>
+              <Text style={[styles.securityName, { color: Colors[scheme].text }]}>Pak Joko Susilo</Text>
+              <Text style={[styles.securityShift, { color: Colors[scheme].primary }]}>Shift Pagi – Siang</Text>
+              <View style={[styles.securityWaBtn, { backgroundColor: Colors[scheme].primaryMuted }]}>
+                <Text style={[styles.securityWaBtnText, { color: Colors[scheme].primary }]}>💬 WhatsApp Pos</Text>
+              </View>
+            </Card>
+          </StaggerIn>
+        </Pressable>
+      </View>
+
+      {/* 5. Khusus Pengurus RT: Notifikasi Inbox Laporan Masuk */}
       {!isWarga && (data?.laporanBaru ?? 0) > 0 && (
         <StaggerIn index={6}>
           <Pressable onPress={() => router.push('/inbox')}>
@@ -332,7 +345,7 @@ export default function BerandaScreen() {
         </StaggerIn>
       )}
 
-      <SectionTitle>Ringkasan Informasi</SectionTitle>
+      <SectionTitle>Ringkasan Informasi Lingkungan</SectionTitle>
       <View style={styles.statsGrid}>
         <BentoTile
           index={7}
@@ -346,7 +359,7 @@ export default function BerandaScreen() {
         <BentoTile
           index={8}
           emoji="👨‍👩‍👧‍👦"
-          label="Total Keluarga"
+          label="Keluarga"
           value={`${data?.totalKeluarga ?? 0} KK`}
           chipColor={Colors[scheme].primaryMuted}
           valueColor={Colors[scheme].primary}
@@ -355,7 +368,7 @@ export default function BerandaScreen() {
         <BentoTile
           index={9}
           emoji="🧾"
-          label="Iuran Bulan Ini"
+          label="Iuran Bln Ini"
           value={`${iuranPct}% lunas`}
           chipColor={Colors[scheme].warningMuted}
           valueColor={Colors[scheme].text}
@@ -376,7 +389,7 @@ export default function BerandaScreen() {
           index={10}
           emoji="📣"
           label="Laporan Baru"
-          value={String(data?.laporanBaru ?? 0)}
+          value={`${data?.laporanBaru ?? 0} Aduan`}
           chipColor={Colors[scheme].dangerMuted}
           valueColor={(data?.laporanBaru ?? 0) > 0 ? Colors[scheme].danger : Colors[scheme].muted}
         />
@@ -387,7 +400,7 @@ export default function BerandaScreen() {
         <EmptyState message="Belum ada pengumuman" />
       ) : (
         pengumuman.map((p) => (
-          <Card key={p.id}>
+          <Card key={p.id} style={styles.itemCard}>
             <View style={styles.rowBetween}>
               <Text style={styles.itemTitle}>{p.judul}</Text>
               {p.penting === 1 && <Badge label="Penting" variant="danger" />}
@@ -404,7 +417,7 @@ export default function BerandaScreen() {
         <EmptyState message="Tidak ada kegiatan mendatang" />
       ) : (
         kegiatan.map((k) => (
-          <Card key={k.id}>
+          <Card key={k.id} style={styles.itemCard}>
             <View style={styles.rowBetween}>
               <Text style={styles.itemTitle}>{k.judul}</Text>
               <Badge label={k.jenis} variant="info" />
@@ -431,314 +444,454 @@ const styles = StyleSheet.create({
   bannerCard: {
     borderRadius: 20,
     overflow: 'hidden',
-    marginBottom: 12,
+    marginBottom: 10,
     borderWidth: 1,
-    shadowColor: '#1a2030',
-    shadowOpacity: 0.06,
+    height: 150,
+    position: 'relative',
+    shadowColor: '#1c1917',
+    shadowOpacity: 0.05,
     shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   bannerImage: {
     width: '100%',
-    height: 200,
+    height: '100%',
     resizeMode: 'cover',
   },
-  bannerInfo: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  bannerOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    backgroundColor: 'rgba(28, 25, 23, 0.45)',
+    justifyContent: 'flex-end',
+    padding: 14,
+  },
+  bannerBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#059669',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginBottom: 4,
+  },
+  bannerBadgeText: {
+    color: '#ffffff',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   bannerTitle: {
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: 19,
+    fontWeight: '900',
+    color: '#ffffff',
   },
   bannerSub: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 2,
+    fontSize: 11,
+    color: '#f5f5f4',
+    marginTop: 1,
+    fontWeight: '500',
   },
   hero: {
-    padding: 16,
-    marginBottom: 12,
+    padding: 12,
+    marginBottom: 10,
   },
-  heroTop: {
+  heroRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-    marginBottom: 2,
+    gap: 12,
+  },
+  heroAvatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heroTitle: {
-    fontSize: 21,
-    fontWeight: '800',
-    flexShrink: 1,
+    fontSize: 16,
+    fontWeight: '900',
   },
   roleBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: 999,
   },
   roleBadgeText: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 9,
+    fontWeight: '900',
     letterSpacing: 0.5,
   },
   heroSub: {
-    marginTop: 4,
-    fontSize: 13,
+    marginTop: 2,
+    fontSize: 11,
   },
-  heroBadges: {
+  syncButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  syncButtonText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  auroraHeroCard: {
+    backgroundColor: '#047857',
+    borderRadius: 22,
+    padding: 16,
+    marginBottom: 10,
+    shadowColor: '#047857',
+    shadowOpacity: 0.25,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
+  kasTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  kasLabel: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  kasPill: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
+  kasPillText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  kasValue: {
+    color: '#ffffff',
+    fontSize: 30,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+    marginTop: 2,
+  },
+  kasSubRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 4,
+  },
+  kasChip: {
+    backgroundColor: 'rgba(52, 211, 153, 0.25)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  kasChipText: {
+    color: '#a7f3d0',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  kasSubText: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
+  },
+  kasBottomGrid: {
     flexDirection: 'row',
     gap: 8,
     marginTop: 12,
-    flexWrap: 'wrap',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.15)',
   },
-  kasBanner: {},
-  kasBase: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  kasMiniBox: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.18)',
+    borderRadius: 12,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  kasShade: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '65%',
-    opacity: 0.55,
-  },
-  kasGlowA: {
-    position: 'absolute',
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: 'rgba(255,255,255,0.16)',
-    top: -50,
-    right: -30,
-  },
-  kasGlowB: {
-    position: 'absolute',
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: 'rgba(0,0,0,0.12)',
-    bottom: -40,
-    left: -25,
-  },
-  kasContent: {
-    padding: 16,
-  },
-  kasLabel: {
-    color: 'rgba(255,255,255,0.82)',
-    fontSize: 12,
+  kasMiniLabel: {
+    color: '#a7f3d0',
+    fontSize: 10,
     fontWeight: '600',
   },
-  kasValue: {
-    color: '#fff',
-    fontSize: 26,
+  kasMiniLabelRed: {
+    color: '#fecaca',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  kasMiniValue: {
+    color: '#ffffff',
+    fontSize: 13,
     fontWeight: '800',
     marginTop: 2,
   },
-  kasFlowRow: {
+  actionDeckRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 12,
+    gap: 10,
+    marginBottom: 10,
   },
-  kasFlowChip: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  deckColPanic: {
+    flexGrow: 1.2,
+    flexBasis: 260,
   },
-  kasFlowText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '700',
+  deckCol: {
+    flexGrow: 1,
+    flexBasis: 220,
   },
   auroraPanicCard: {
     backgroundColor: '#dc2626',
-    borderRadius: 22,
-    padding: 14,
-    marginBottom: 12,
+    borderRadius: 20,
+    padding: 12,
     borderWidth: 1,
     borderColor: 'rgba(254, 202, 202, 0.4)',
     shadowColor: '#dc2626',
     shadowOpacity: 0.28,
     shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+    minHeight: 116,
+    justifyContent: 'space-between',
   },
-  panicRow: {
+  panicTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
   },
   panicIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.22)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   panicBannerTitle: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '900',
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   },
   panicBannerSub: {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: 11,
-    marginTop: 2,
+    color: 'rgba(255, 255, 255, 0.88)',
+    fontSize: 10,
+    marginTop: 1,
   },
   panicBadge: {
     backgroundColor: '#ffffff',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
   panicBadgeText: {
     color: '#dc2626',
     fontWeight: '900',
+    fontSize: 9,
+  },
+  panicBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  panicBottomText: {
+    color: '#fee2e2',
     fontSize: 10,
   },
-  actionBanner: {
-    padding: 14,
-    marginBottom: 10,
+  panicBottomLink: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '800',
   },
-  actionRow: {
+  actionCard: {
+    marginBottom: 0,
+    padding: 12,
+    borderRadius: 20,
+    minHeight: 116,
+    justifyContent: 'space-between',
+  },
+  actionTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
   },
   actionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  actionBannerTitle: {
+  actionCardTitle: {
     fontSize: 13,
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: 0.3,
   },
-  actionBannerSub: {
-    fontSize: 11,
-    marginTop: 2,
-  },
-  actionBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-  },
-  actionBadgeText: {
-    fontWeight: '800',
-    fontSize: 10,
-  },
-  securityLiveTag: {
+  actionCountBadge: {
+    backgroundColor: '#fee2e2',
     paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingVertical: 1,
     borderRadius: 4,
   },
-  securityLiveTagText: {
-    color: '#fff',
+  actionCountText: {
+    color: '#dc2626',
     fontSize: 9,
     fontWeight: '900',
   },
+  actionCardSub: {
+    fontSize: 10,
+    marginTop: 1,
+  },
+  actionBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 8,
+  },
+  actionBottomText: {
+    fontSize: 10,
+  },
+  actionBottomLink: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  securityTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  securityTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  securityPingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#10b981',
+  },
+  securityName: {
+    fontSize: 12,
+    fontWeight: '800',
+    marginTop: 2,
+  },
+  securityShift: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  securityWaBtn: {
+    marginTop: 6,
+    paddingVertical: 5,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  securityWaBtnText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
   inboxAlertCard: {
-    padding: 12,
+    padding: 10,
     marginBottom: 10,
+    borderRadius: 16,
   },
   inboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 10,
+    gap: 8,
   },
   inboxLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     flex: 1,
   },
   inboxAlertTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '800',
   },
   inboxAlertSub: {
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: 10,
+    marginTop: 1,
   },
   inboxCountBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   inboxCountText: {
     color: '#fff',
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '900',
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
     marginBottom: 8,
   },
   tileWrapper: {
     flexGrow: 1,
     flexShrink: 1,
-    minWidth: 200,
+    minWidth: 140,
     maxWidth: '100%',
   },
   tileCard: {
     marginBottom: 0,
-    padding: 16,
-    borderRadius: 20,
-    minHeight: 110,
+    padding: 12,
+    borderRadius: 18,
+    minHeight: 90,
     justifyContent: 'space-between',
   },
   tileIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tileValue: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
-    marginTop: 4,
+    marginTop: 2,
   },
   tileLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
   },
   progressTrack: {
-    height: 6,
+    height: 5,
     borderRadius: 3,
     overflow: 'hidden',
-    marginTop: 10,
+    marginTop: 6,
   },
   progressFill: {
     height: '100%',
     borderRadius: 3,
   },
   progressText: {
-    fontSize: 10,
-    marginTop: 4,
+    fontSize: 9,
+    marginTop: 2,
+  },
+  itemCard: {
+    padding: 12,
+    marginBottom: 8,
+    borderRadius: 16,
   },
   rowBetween: {
     flexDirection: 'row',
@@ -747,15 +900,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   itemTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
     flexShrink: 1,
   },
   itemMeta: {
-    fontSize: 12,
-    marginTop: 4,
+    fontSize: 11,
+    marginTop: 2,
   },
   footerCard: {
-    marginTop: 8,
+    marginTop: 4,
+    padding: 12,
+    borderRadius: 16,
   },
 });
