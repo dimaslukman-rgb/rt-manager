@@ -99,8 +99,9 @@ export function FAB({
 }
 
 export function SectionTitle({ children }: { children: React.ReactNode }) {
+  const scheme = useColorScheme();
   return (
-    <Text style={[styles.sectionTitle, { color: '#94a3b8' }]}>{children}</Text>
+    <Text style={[styles.sectionTitle, { color: Colors[scheme].muted }]}>{children}</Text>
   );
 }
 
