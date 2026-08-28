@@ -215,38 +215,27 @@ export default function BerandaScreen() {
         </GlassCard>
       </StaggerIn>
 
-      {/* 4. Panic Button Emergency Card (Aurora Glass + subtle red accent) */}
+      {/* 4. Panic Button Emergency Card (Aurora Glowing Red Accent) */}
       <StaggerIn index={3}>
         <Pressable onPress={() => router.push('/darurat')}>
-          <GlassCard
-            style={[
-              styles.panicBanner,
-              {
-                backgroundColor: scheme === 'dark' ? 'rgba(248,113,113,0.20)' : 'rgba(220,38,38,0.08)',
-                borderColor: scheme === 'dark' ? 'rgba(248,113,113,0.40)' : 'rgba(220,38,38,0.30)',
-              },
-            ]}>
+          <View style={styles.auroraPanicCard}>
             <View style={styles.panicRow}>
-              <View
-                style={[
-                  styles.panicIconCircle,
-                  { backgroundColor: scheme === 'dark' ? 'rgba(248,113,113,0.22)' : 'rgba(220,38,38,0.14)' },
-                ]}>
+              <View style={styles.panicIconCircle}>
                 <Text style={{ fontSize: 24 }}>🚨</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.panicBannerTitle, { color: Colors[scheme].danger }]}>
+                <Text style={styles.panicBannerTitle}>
                   TOMBOL PANIK (PANIC BUTTON)
                 </Text>
-                <Text style={[styles.panicBannerSub, { color: Colors[scheme].muted }]}>
+                <Text style={styles.panicBannerSub}>
                   Panggil bantuan security & bunyikan alarm darurat
                 </Text>
               </View>
-              <View style={[styles.panicBadge, { backgroundColor: Colors[scheme].danger }]}>
+              <View style={styles.panicBadge}>
                 <Text style={styles.panicBadgeText}>DARURAT</Text>
               </View>
             </View>
-          </GlassCard>
+          </View>
         </Pressable>
       </StaggerIn>
 
@@ -496,6 +485,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     flexWrap: 'wrap',
   },
+  kasBanner: {},
   kasBase: {
     position: 'absolute',
     top: 0,
@@ -560,9 +550,18 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
   },
-  panicBanner: {
+  auroraPanicCard: {
+    backgroundColor: '#dc2626',
+    borderRadius: 22,
     padding: 14,
-    marginBottom: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(254, 202, 202, 0.4)',
+    shadowColor: '#dc2626',
+    shadowOpacity: 0.28,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
   panicRow: {
     flexDirection: 'row',
@@ -573,25 +572,29 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.22)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   panicBannerTitle: {
-    fontSize: 13,
-    fontWeight: '800',
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '900',
     letterSpacing: 0.5,
   },
   panicBannerSub: {
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 11,
     marginTop: 2,
   },
   panicBadge: {
-    paddingHorizontal: 8,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 8,
   },
   panicBadgeText: {
-    color: '#fff',
+    color: '#dc2626',
     fontWeight: '900',
     fontSize: 10,
   },
